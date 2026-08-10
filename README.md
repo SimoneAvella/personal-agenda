@@ -60,7 +60,7 @@ Vuoi far girare l'Agenda sul tuo computer? Ecco come fare:
 
 3. **Frontend (Node.js)**:
    ```bash
-   cd Frontend_agenda
+   cd Frontend
    npm install
    npm run dev
    ```
