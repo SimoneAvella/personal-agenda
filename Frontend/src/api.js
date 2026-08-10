@@ -2,7 +2,7 @@ import axios from "axios";
 import { io } from "socket.io-client";
 
 // Determina se siamo in sviluppo o produzione
-export const API_BASE_URL = "https://mia-agenda.onrender.com";
+export const API_BASE_URL = "https://personal-agenda.onrender.com";
 export const BASE_URL = import.meta.env.DEV ? API_BASE_URL : "";
 
 // Configura axios per includere il token se presente
