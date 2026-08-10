@@ -444,21 +444,11 @@
   padding-right: 4px; /* padding for scrollbar space */
 }
 
+.backlog-columns {
+  scrollbar-width: none;
+}
 .backlog-columns::-webkit-scrollbar {
-  width: 6px;
-}
-
-.backlog-columns::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.backlog-columns::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.15);
-  border-radius: 4px;
-}
-
-.backlog-columns::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.3);
+  display: none;
 }
 
 .activity-column {
