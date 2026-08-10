@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import { getWeekDates, getTodayString } from "./utils/dates";
 import TaskItem from "./TaskItem";
 import { getTasks, moveTaskAPI, checkAuth, logout, API_BASE_URL, initSocket, addTask as apiAddTask, patchTask as apiPatchTask, deleteTask as apiDeleteTask } from "./api";
+import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import {
   DndContext,
   PointerSensor,
@@ -667,6 +668,7 @@ function App() {
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         collisionDetection={customCollisionDetection}
+        modifiers={[snapCenterToCursor]}
         measuring={{ droppable: { strategy: MeasuringStrategy.WhileDragging } }}
       >
         <DroppableContainer id="edge-left" className="edge-drop-zone left" />
