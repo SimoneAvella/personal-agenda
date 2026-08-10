@@ -1390,3 +1390,19 @@
 }
 .edge-drop-zone.left { left: 0; }
 .edge-drop-zone.right { right: 0; }
+
+
+@media (max-width: 768px) {
+  .mobile-archive-columns {
+    gap: 4px;
+    padding: 0;
+  }
+  .mobile-archive-columns .activity-column {
+    overflow-y: auto;
+  }
+  .mobile-archive-columns .task-item {
+    font-size: 10px;
+    padding: 4px;
+    margin-bottom: 4px;
+  }
+}
