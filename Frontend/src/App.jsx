@@ -346,13 +346,13 @@ function App() {
     const timeToSet = parseTime(newTask);
     const cleanedText = stripTime(newTask);
     const newTaskObj = { id: newId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
-    const updatedTasks = {
-      ...tasks,
-      Backlog: [
-        newTaskObj,
-        ...(tasks["Backlog"] || [])
-      ]
-    };
+    const updatedTasks = { ...tasks };
+    if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
+    if (timeToSet) {
+      updatedTasks["Backlog"].unshift(newTaskObj);
+    } else {
+      updatedTasks["Backlog"].push(newTaskObj);
+    }
     setTasks(updatedTasks);
     setNewTask("");
     setShowInput(false);
@@ -375,7 +375,14 @@ function App() {
     };
     const newTasks = { ...tasks };
     if (!newTasks[day]) newTasks[day] = [];
-    newTasks[day].push(newTaskObj);
+    
+    // Se c'è un orario, inserisci in cima. Altrimenti in fondo.
+    if (timeToSet) {
+      newTasks[day].unshift(newTaskObj);
+    } else {
+      newTasks[day].push(newTaskObj);
+    }
+    
     setTasks(newTasks);
     setAddingToDay(null);
     setInlineDayTask("");
