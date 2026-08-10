@@ -47,7 +47,6 @@ script_locali/
 # ===========================
 Frontend/dist/
 Frontend/dist-ssr/
-Frontend/package-lock.json
 
 # ===========================
 # Node
