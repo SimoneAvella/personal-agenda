@@ -772,16 +772,26 @@ function App() {
         {showArchiveModal && (
           <div className="archive-modal-overlay" onClick={() => setShowArchiveModal(false)}>
             <div className="archive-modal-content" onClick={(e) => e.stopPropagation()}>
-              <h2>Azioni & Archivio 📋</h2>
-              <DroppableContainer id="Backlog" className="archive-drop-zone">
-                <SortableContext items={tasks["Backlog"] || []} strategy={rectSortingStrategy}>
-                  <div className="archive-grid">
-                    {(tasks["Backlog"] || []).map((t) => (
-                      <TaskItem key={t.id || t.text || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DroppableContainer>
+              <div className="archive-modal-header-row">
+                <h2>Attività 📋</h2>
+                <button className="archive-close-btn" onClick={() => setShowArchiveModal(false)}>✕</button>
+              </div>
+              <div className="backlog-columns mobile-archive-columns">
+                {[0, 1, 2].map((colIdx) => (
+                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`}>
+                    {colIdx === 0 && showInput && (
+                      <div className="input-with-feedback">
+                        <textarea className="task-input" placeholder="Inserisci task..." value={newTask} autoFocus onChange={(e) => { setNewTask(e.target.value); }} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } }} />
+                      </div>
+                    )}
+                    <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
+                      {columns[colIdx].map((t) => (
+                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} />
+                      ))}
+                    </SortableContext>
+                  </DroppableContainer>
+                ))}
+              </div>
             </div>
           </div>
         )}
