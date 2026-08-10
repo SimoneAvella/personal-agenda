@@ -1350,8 +1350,7 @@
   transition: background-color 0.2s ease;
   border-radius: 6px;
   padding: 5px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.15) transparent;
+  scrollbar-width: none;
 }
 
 .column-scroll-area:hover {
@@ -1359,20 +1358,7 @@
 }
 
 .column-scroll-area::-webkit-scrollbar {
-  width: 4px;
-}
-
-.column-scroll-area::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.column-scroll-area::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.15);
-  border-radius: 4px;
-}
-
-.column-scroll-area::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.3);
+  display: none;
 }
 
 .add-task-click-area {
