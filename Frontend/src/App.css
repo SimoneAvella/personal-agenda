@@ -374,7 +374,7 @@
   margin-bottom: 4px;
   border-radius: 8px;
   min-width: 300px;
-  height: calc(100% - 8px);
+  min-height: 0;
   padding: 0px 10px 10px 10px;
   box-sizing: border-box;
   overflow: hidden;
