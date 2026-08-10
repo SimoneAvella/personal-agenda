@@ -720,7 +720,7 @@ function App() {
             <div className="backlog-sidebar">
               <div className="backlog-header">
                 <div className="left-group">
-                  <h2 className="backlog-title">Attività 📓</h2>
+                  <h2 className="backlog-title">Attività 📋</h2>
                   <button className="add-task-btn" onClick={() => setShowInput(true)}>➕</button>
                   <DroppableContainer id="trash-zone" className="trash-drop-zone" title="Trascina qui per eliminare" onClick={() => setShowTrashModal(true)}>
                     <button className="action-btn-circ trash" title="Cestino">🗑️</button>
