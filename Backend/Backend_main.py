@@ -422,7 +422,7 @@ async def move_task(payload: dict = Body(...), db: SessionLocal = Depends(get_db
 
 # --- SERVE FRONTEND (ROBUSTO) ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DIST_DIR = os.path.join(BASE_DIR, "Frontend_agenda", "dist")
+DIST_DIR = os.path.join(BASE_DIR, "Frontend", "dist")
 
 @app.get("/api/health")
 @app.head("/api/health")
