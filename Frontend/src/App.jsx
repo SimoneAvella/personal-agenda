@@ -772,7 +772,10 @@ function App() {
         {showArchiveModal && (
           <div className="archive-modal-overlay" onClick={() => setShowArchiveModal(false)}>
             <div className="archive-modal-content" onClick={(e) => e.stopPropagation()}>
-              <h2>Attività 📋</h2>
+              <div className="archive-modal-header-row">
+                <h2>Attività 📋</h2>
+                <button className="archive-close-btn" onClick={() => setShowArchiveModal(false)}>✕</button>
+              </div>
               <div className="backlog-columns mobile-archive-columns">
                 {[0, 1, 2].map((colIdx) => (
                   <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`}>
