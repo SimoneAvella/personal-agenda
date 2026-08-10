@@ -7,7 +7,7 @@ pip install -r requirements.txt
 
 # ==== Install Node dependencies ====
 echo "=== Install Node dependencies ==="
-cd Frontend_agenda
+cd Frontend
 npm ci
 
 # ==== Clean previous build (if any) ====
