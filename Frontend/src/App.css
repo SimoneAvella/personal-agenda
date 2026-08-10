@@ -263,8 +263,9 @@
   color: black;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  padding-bottom: 4px; 
+  padding-bottom: 2px; 
   margin-top: 4px; /* Abbassato ulteriormente da 1px */
+  margin-bottom: 0;
   z-index: 2;
   position: relative;
 }
@@ -1339,7 +1340,7 @@
   min-height: 0;
   transition: background-color 0.2s ease;
   border-radius: 6px;
-  padding: 2px 5px 5px 5px;
+  padding: 0px 5px 5px 5px;
   scrollbar-width: none;
 }
 
