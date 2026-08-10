@@ -1416,7 +1416,7 @@
     flex-shrink: 0;
   }
   .mobile-archive-columns {
-    gap: 2px;
+    gap: 0;
     padding: 0;
     flex: 1;
     min-height: 0;
