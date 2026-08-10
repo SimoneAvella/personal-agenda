@@ -37,7 +37,7 @@ Questo progetto adotta una robusta architettura full-stack:
 
 ## 🧠 Metodologia di Sviluppo (AI Pair Programming)
 Questo progetto è stato architettato, sviluppato e debuggato adottando un flusso di lavoro **AI Pair Programming**. 
-L'obiettivo è stato concentrarsi sulla definizione dei requisiti, sulla progettazione architetturale (System Design) e sulla gestione del ciclo di vita del software, guidando un assistente AI nella stesura e nel refactoring del codice. Questo approccio dimostra una forte capacità di problem-solving, code-reviewing e project management nell'era dell'Intelligenza Artificiale.
+L'obiettivo è stato concentrarsi sulla definizione dei requisiti, sulla progettazione architetturale (System Design) e sulla gestione del ciclo di vita del software, guidando un assistente AI nella stesura e nel refactoring del codice. 
 
 ---
 
