@@ -199,11 +199,27 @@ function App() {
       (payload) => {
         setTasks(prev => {
           const newTasks = { ...prev };
-          Object.keys(newTasks).forEach(key => {
-            newTasks[key] = newTasks[key].filter(t => String(t.id) !== String(payload.id));
-          });
-          if (!newTasks[payload.day]) newTasks[payload.day] = [];
-          newTasks[payload.day].push(payload);
+          let oldDay = null;
+          let oldIdx = -1;
+          for (const key of Object.keys(newTasks)) {
+            const idx = newTasks[key].findIndex(t => String(t.id) === String(payload.id));
+            if (idx !== -1) {
+              oldDay = key;
+              oldIdx = idx;
+              break;
+            }
+          }
+
+          if (oldDay === payload.day) {
+            newTasks[payload.day] = [...newTasks[payload.day]];
+            newTasks[payload.day][oldIdx] = payload;
+          } else {
+            if (oldDay) {
+              newTasks[oldDay] = newTasks[oldDay].filter(t => String(t.id) !== String(payload.id));
+            }
+            if (!newTasks[payload.day]) newTasks[payload.day] = [];
+            newTasks[payload.day].push(payload);
+          }
           return newTasks;
         });
       },
