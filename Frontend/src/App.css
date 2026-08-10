@@ -438,34 +438,36 @@
   width: 100%;
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
+  padding-right: 4px; /* padding for scrollbar space */
+}
+
+.backlog-columns::-webkit-scrollbar {
+  width: 6px;
+}
+
+.backlog-columns::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.backlog-columns::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+  border-radius: 4px;
+}
+
+.backlog-columns::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.3);
 }
 
 .activity-column {
   flex: 1 1 0;
   min-width: 0;
-  min-height: 0;
+  min-height: min-content; /* Allow it to stretch to content height */
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.15) transparent;
-}
-
-.activity-column::-webkit-scrollbar {
-  width: 4px;
-}
-
-.activity-column::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.activity-column::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.15);
-  border-radius: 4px;
-}
-
-.activity-column::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.3);
+  overflow: visible; /* No scrollbar here */
 }
 
 /* =========================
