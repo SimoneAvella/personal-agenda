@@ -3,8 +3,8 @@
 **Mia Agenda** è una web application full-stack progettata per gestire compiti, appuntamenti e note in modo intuitivo attraverso un'interfaccia moderna e reattiva con funzionalità di Drag & Drop. 
 Costruita con un'architettura moderna per supportare aggiornamenti in tempo reale e notifiche push, l'app è completamente installabile su desktop e mobile come **PWA** (Progressive Web App).
 
-![Screenshot dell'Agenda](https://via.placeholder.com/800x450.png?text=Inserisci+qui+uno+screenshot+o+una+GIF+della+tua+app)
-*(Nota per Simone: sostituisci questo link con un vero screenshot della tua app!)*
+<img width="400" height="799" alt="WhatsApp Image 2026-08-10 at 15 50 22" src="https://github.com/user-attachments/assets/9c62aef6-d12c-4191-ad2e-658b205d374f" />
+
 
 ## ✨ Funzionalità Principali
 
