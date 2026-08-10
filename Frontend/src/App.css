@@ -154,7 +154,8 @@
   flex: 1;
   display: flex;
   margin-top: 0px;
-  min-height: 0; 
+  min-height: 0;
+  height: 0; /* forza il rispetto dei limiti flex, backlog-sidebar usa height: calc(100% - 8px) */
 }
 
 /* =========================
