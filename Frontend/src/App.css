@@ -1445,17 +1445,17 @@
     padding: 0;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: row;
-    align-items: stretch;
+    align-items: flex-start;
   }
   .mobile-archive-columns .activity-column {
     flex: 1;
     min-width: 0;
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     border: 1px solid #e2e8f0;
