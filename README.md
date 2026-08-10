@@ -41,7 +41,38 @@ L'obiettivo è stato concentrarsi sulla definizione dei requisiti, sulla progett
 
 ---
 
+## 📁 Struttura del Progetto
+
+```
+personal-agenda/
+│
+├── Backend/                  # Server Python (FastAPI)
+│   ├── Backend_main.py       # Entry point: API REST, routing, serve il frontend
+│   ├── ws.py                 # Gestione connessioni WebSocket real-time
+│   ├── deps.py               # Dipendenze condivise (autenticazione, sessioni)
+│   └── requirements.txt      # Librerie Python necessarie
+│
+├── Frontend/                 # App React (Vite)
+│   ├── public/               # Asset statici (icone, manifest PWA, service worker)
+│   └── src/
+│       ├── App.jsx           # Componente principale: logica, stato, layout
+│       ├── App.css           # Tutti gli stili (tema, glassmorphism, animazioni)
+│       ├── Login.jsx         # Schermata di login con MFA
+│       ├── TaskItem.jsx      # Singolo task (post-it) con drag, spunta e modifica
+│       ├── DroppableDay.jsx  # Colonna giorno: zona dove "rilasciare" i task
+│       ├── DroppableContainer.jsx  # Contenitore generico per il drag & drop
+│       ├── api.js            # Configurazione Axios e Socket.IO (client)
+│       └── utils/dates.js    # Utilità per calcolo settimana e formattazione date
+│
+├── build.sh                  # Script di build per Render (installa e compila tutto)
+├── Procfile                  # Dice a Render come avviare il server Python
+└── requirements.txt          # (root) Puntatore alle dipendenze Python
+```
+
+---
+
 ## 📦 Installazione e Avvio (Locale)
+
 
 Vuoi far girare l'Agenda sul tuo computer? Ecco come fare:
 

@@ -163,7 +163,8 @@
 .calendar-section {
   flex: 2.5;
   display: flex;
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Effetto comune per tutti i bersagli di rilascio (frecce, cestino, archivio) */
@@ -245,7 +246,8 @@
   padding: 5px 4px 10px 4px; /* Ridotto padding superiore */
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
+  overflow: hidden;
+  min-height: 0;
   box-sizing: border-box;
   position: relative;
 }
