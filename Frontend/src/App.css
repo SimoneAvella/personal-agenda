@@ -474,13 +474,12 @@
 .task-item {
   background: #ffffff;
   border: 2px solid black;
-  width: 100%;            /* garantisce il riempimento */
-  max-width: none;        /* rimuove eventuali limiti di larghezza */
-  margin: 0 0 8px 0;      /* solo margine verticale, niente margine laterale */
-  padding: 6px 4px 6px 3px; /* meno padding sx per avvicinare la checkbox al bordo */
-  box-sizing: border-box;/* include padding nel calcolo della larghezza */
+  width: 100%;
+  max-width: none;
+  margin: 0 0 8px 0;
+  padding: 6px 4px 6px 3px;
+  box-sizing: border-box;
   border-radius: 6px;
-  margin-bottom: 8px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
@@ -489,6 +488,7 @@
   display: flex;
   align-items: flex-start;
   gap: 4px;
+  flex-shrink: 0; /* IMPEDISCE AI TASK DI SCHIACCIARSI! */
 }
 
 .task-item:hover {
