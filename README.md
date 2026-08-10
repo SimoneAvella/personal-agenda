@@ -47,8 +47,8 @@ Vuoi far girare l'Agenda sul tuo computer? Ecco come fare:
 
 1. **Clona il repository**:
    ```bash
-   git clone https://github.com/SimoneAvella/mia-agenda.git
-   cd mia-agenda
+   git clone https://github.com/SimoneAvella/personal-agenda.git
+   cd personal-agenda
    ```
 
 2. **Backend (Python)**:
