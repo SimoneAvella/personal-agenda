@@ -1339,7 +1339,7 @@
   min-height: 0;
   transition: background-color 0.2s ease;
   border-radius: 6px;
-  padding: 5px;
+  padding: 2px 5px 5px 5px;
   scrollbar-width: none;
 }
 
