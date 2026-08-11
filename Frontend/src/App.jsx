@@ -49,7 +49,7 @@ function App() {
   const [draggingEdge, setDraggingEdge] = useState(null);
   const [edgeTimer, setEdgeTimer] = useState(null);
   
-  const EDGE_TIMEOUT = 1100;
+  const EDGE_TIMEOUT = 600;
   const EDGE_THRESHOLD = 80;
 
   const [addingToDay, setAddingToDay] = useState(null);
