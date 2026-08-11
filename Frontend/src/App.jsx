@@ -691,6 +691,16 @@ function App() {
         <div className="main-layout">
           <div className="calendar-section">
             <div className="week-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+              {isMobile && (
+                <>
+                  <DroppableContainer id="edge-left" className="mobile-edge-arrow left">
+                    <span>◀</span>
+                  </DroppableContainer>
+                  <DroppableContainer id="edge-right" className="mobile-edge-arrow right">
+                    <span>▶</span>
+                  </DroppableContainer>
+                </>
+              )}
               {days.map((day, i) => {
                 const isToday = day === getTodayString();
                 return (
@@ -718,15 +728,7 @@ function App() {
               })}
               {isMobile && (
                 <div className="day-column mobile-backlog-column">
-                  <div className="mobile-action-header-row">
-                    <DroppableContainer id="edge-left" className="mobile-week-arrow">
-                      <span>◀</span>
-                    </DroppableContainer>
-                    <h3>MENU AZIONI 📓</h3>
-                    <DroppableContainer id="edge-right" className="mobile-week-arrow">
-                      <span>▶</span>
-                    </DroppableContainer>
-                  </div>
+                  <h3>MENU AZIONI 📓</h3>
                   <div className="mobile-action-center">
                     <DroppableContainer id="archive-zone" className="action-btn-circ-wrapper" onClick={() => setShowArchiveModal(true)}>
                       <button className="action-btn-circ archive" title="Archivio" style={{ pointerEvents: "none" }}><span className="icon">📝 </span></button>

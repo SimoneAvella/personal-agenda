@@ -981,28 +981,37 @@
     flex: 1;
   }
 
-  .mobile-week-arrow {
+  .mobile-edge-arrow {
+    position: fixed;
+    top: 13%;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(51, 65, 85, 0.18);
+    color: rgba(51, 65, 85, 0.5);
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #e2e8f0;
-    color: #334155;
-    font-size: 0.9rem;
+    z-index: 3000;
     cursor: pointer;
     transition: all 0.2s ease;
-    flex-shrink: 0;
     touch-action: none;
     user-select: none;
+    backdrop-filter: blur(2px);
+    border: 1.5px solid rgba(51, 65, 85, 0.15);
+    pointer-events: none;
   }
 
-  .mobile-week-arrow.is-over {
-    background: #3b82f6;
+  .mobile-edge-arrow.left  { left: 4px; }
+  .mobile-edge-arrow.right { right: 4px; }
+
+  .mobile-edge-arrow.is-over {
+    background: rgba(59, 130, 246, 0.85);
     color: white;
-    transform: scale(1.5);
-    box-shadow: 0 0 12px rgba(59,130,246,0.5);
+    transform: scale(2.2);
+    box-shadow: 0 0 18px rgba(59,130,246,0.6);
+    border-color: transparent;
   }
 
   .week-nav-toast {
