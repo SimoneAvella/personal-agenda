@@ -986,34 +986,44 @@
     position: fixed;
     top: 53.7%;
     transform: translateY(-50%);
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
+    width: 75px;
+    height: 130px;
     background: transparent;
-    color: rgba(51, 65, 85, 0.25);
-    font-size: 1.1rem;
     display: flex;
     align-items: center;
-    justify-content: center;
     z-index: 3000;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    touch-action: none;
-    user-select: none;
-    border: none;
     pointer-events: none;
   }
 
-  .mobile-edge-arrow.left  { left: -4px; }
-  .mobile-edge-arrow.right { right: -4px; }
+  .mobile-edge-arrow.left { left: 0; }
+  .mobile-edge-arrow.right { right: 0; }
 
-  .mobile-edge-arrow.is-over {
+  .mobile-edge-arrow span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    color: rgba(51, 65, 85, 0.25);
+    background: transparent;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+    position: absolute;
+  }
+
+  .mobile-edge-arrow.left span { left: -2px; }
+  .mobile-edge-arrow.right span { right: -2px; }
+
+  .mobile-edge-arrow.is-over span {
     background: rgba(59, 130, 246, 0.85);
     color: white;
-    transform: translateY(-50%) scale(2.2);
+    transform: scale(2.4);
     box-shadow: 0 0 18px rgba(59,130,246,0.6);
-    border-color: transparent;
   }
+
+  .mobile-edge-arrow.left.is-over span { left: 16px; }
+  .mobile-edge-arrow.right.is-over span { right: 16px; }
 
   .week-nav-toast {
     position: fixed;
