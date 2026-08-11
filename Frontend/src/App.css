@@ -965,6 +965,69 @@
     justify-content: center;
   }
 
+  .mobile-action-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 2px;
+    box-sizing: border-box;
+  }
+
+  .mobile-action-header-row h3 {
+    margin: 0;
+    font-size: 0.6rem;
+    text-align: center;
+    flex: 1;
+  }
+
+  .mobile-week-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #334155;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .mobile-week-arrow.is-over {
+    background: #3b82f6;
+    color: white;
+    transform: scale(1.5);
+    box-shadow: 0 0 12px rgba(59,130,246,0.5);
+  }
+
+  .week-nav-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: rgba(30, 41, 59, 0.92);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    z-index: 5000;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .week-nav-toast.active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
   .action-btn-circ {
     width: 56px;
     height: 56px;

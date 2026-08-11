@@ -688,8 +688,6 @@ function App() {
         modifiers={[snapCenterToCursor]}
         measuring={{ droppable: { strategy: MeasuringStrategy.WhileDragging } }}
       >
-        <DroppableContainer id="edge-left" className="edge-drop-zone left" />
-        <DroppableContainer id="edge-right" className="edge-drop-zone right" />
         <div className="main-layout">
           <div className="calendar-section">
             <div className="week-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
@@ -720,7 +718,15 @@ function App() {
               })}
               {isMobile && (
                 <div className="day-column mobile-backlog-column">
-                  <h3>MENU AZIONI 📓</h3>
+                  <div className="mobile-action-header-row">
+                    <DroppableContainer id="edge-left" className="mobile-week-arrow">
+                      <span>◀</span>
+                    </DroppableContainer>
+                    <h3>MENU AZIONI 📓</h3>
+                    <DroppableContainer id="edge-right" className="mobile-week-arrow">
+                      <span>▶</span>
+                    </DroppableContainer>
+                  </div>
                   <div className="mobile-action-center">
                     <DroppableContainer id="archive-zone" className="action-btn-circ-wrapper" onClick={() => setShowArchiveModal(true)}>
                       <button className="action-btn-circ archive" title="Archivio" style={{ pointerEvents: "none" }}><span className="icon">📝 </span></button>
@@ -813,8 +819,8 @@ function App() {
           </div>
         )}
       </DndContext>
-      {draggingEdge === 'left' && <div className="week-portal left active"><span>PRECEDENTE</span></div>}
-      {draggingEdge === 'right' && <div className="week-portal right active"><span>SUCCESSIVA</span></div>}
+      {draggingEdge === 'left' && <div className="week-nav-toast active"><span>◀ Prec</span></div>}
+      {draggingEdge === 'right' && <div className="week-nav-toast active"><span>Succ ▶</span></div>}
     </div>
   );
 }
