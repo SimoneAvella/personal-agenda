@@ -759,10 +759,10 @@ function App() {
               </div>
               <div className="backlog-columns">
                 {[0, 1, 2].map((colIdx) => (
-                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`}>
+                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`} onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
                     {colIdx === 0 && showInput && (
-                      <div className="input-with-feedback">
-                        <textarea className="task-input" placeholder="Inserisci task..." value={newTask} autoFocus onChange={(e) => { setNewTask(e.target.value); }} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } }} />
+                      <div className="inline-day-input-wrapper">
+                        <textarea className="inline-day-textarea" placeholder="Inserisci task..." value={newTask} autoFocus rows={2} onChange={(e) => { setNewTask(e.target.value); }} onBlur={() => handleAddTask()} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } if (e.key === 'Escape') { setShowInput(false); setNewTask(""); } }} />
                       </div>
                     )}
                     <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
@@ -805,8 +805,8 @@ function App() {
                 {[0, 1, 2].map((colIdx) => (
                   <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`} disabled={isDraggingFromBacklog && hasMoved} onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
                     {colIdx === 0 && showInput && (
-                      <div className="input-with-feedback">
-                        <textarea className="task-input" placeholder="Inserisci task..." value={newTask} autoFocus onChange={(e) => { setNewTask(e.target.value); }} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } }} />
+                      <div className="inline-day-input-wrapper">
+                        <textarea className="inline-day-textarea" placeholder="Inserisci task..." value={newTask} autoFocus rows={2} onChange={(e) => { setNewTask(e.target.value); }} onBlur={() => handleAddTask()} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } if (e.key === 'Escape') { setShowInput(false); setNewTask(""); } }} />
                       </div>
                     )}
                     <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
