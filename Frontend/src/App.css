@@ -983,10 +983,10 @@
 
   .mobile-edge-arrow {
     position: fixed;
-    top: 53.8%;
+    top: 53.7%;
     transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     background: transparent;
     color: rgba(51, 65, 85, 0.25);
