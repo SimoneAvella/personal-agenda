@@ -638,13 +638,31 @@ function App() {
   });
 
   const customCollisionDetection = (args) => {
-    const collisions = pointerWithin(args);
+    let collisions = pointerWithin(args);
+    
+    if (isDraggingFromBacklog && hasMoved) {
+      const isBacklogItem = (id) => {
+        if (id === "archive-zone" || id === "Backlog" || String(id).startsWith("Backlog-col-")) return true;
+        return tasks["Backlog"]?.some(t => String(t.id || t.task || t.text) === String(id));
+      };
+      collisions = collisions.filter(c => !isBacklogItem(c.id));
+    }
+
     if (collisions.length > 0) {
       const edgeCollision = collisions.find(c => c.id === 'edge-left' || c.id === 'edge-right');
       if (edgeCollision) return [edgeCollision];
       return collisions;
     }
-    return rectIntersection(args);
+    
+    let rectCollisions = rectIntersection(args);
+    if (isDraggingFromBacklog && hasMoved) {
+      const isBacklogItem = (id) => {
+        if (id === "archive-zone" || id === "Backlog" || String(id).startsWith("Backlog-col-")) return true;
+        return tasks["Backlog"]?.some(t => String(t.id || t.task || t.text) === String(id));
+      };
+      rectCollisions = rectCollisions.filter(c => !isBacklogItem(c.id));
+    }
+    return rectCollisions;
   };
 
   return (
