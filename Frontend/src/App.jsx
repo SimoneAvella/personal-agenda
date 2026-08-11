@@ -45,6 +45,7 @@ function App() {
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [movingTaskId, setMovingTaskId] = useState(null);
   const [isDraggingFromBacklog, setIsDraggingFromBacklog] = useState(false);
+  const [hasMoved, setHasMoved] = useState(false);
   const [draggingEdge, setDraggingEdge] = useState(null);
   const [edgeTimer, setEdgeTimer] = useState(null);
   
@@ -441,6 +442,7 @@ function App() {
     if (foundTask) {
       setActiveTask({ ...foundTask, currentDay: foundDay });
       setIsDraggingFromBacklog(foundDay === "Backlog");
+      setHasMoved(false);
       setDraggingEdge(null);
       activeEdgeRef.current = null;
       if (weekTimerRef.current) clearTimeout(weekTimerRef.current);
@@ -448,6 +450,7 @@ function App() {
   };
 
   const handleDragMove = (event) => {
+    if (!hasMoved) setHasMoved(true);
     if (!ENABLE_WEEK_EDGE_DRAG) return;
     const { over } = event;
     let edge = null;
@@ -770,7 +773,7 @@ function App() {
           </div>
         )}
         {showArchiveModal && (
-          <div className={`archive-modal-overlay ${isDraggingFromBacklog ? 'is-dragging' : ''}`} onClick={() => setShowArchiveModal(false)}>
+          <div className={`archive-modal-overlay ${(isDraggingFromBacklog && hasMoved) ? 'is-dragging' : ''}`} onClick={() => setShowArchiveModal(false)}>
             <div className="archive-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="archive-modal-header-row">
                 <h2>Attività 📋</h2>
