@@ -983,7 +983,7 @@
 
   .mobile-edge-arrow {
     position: fixed;
-    top: 53%;
+    top: 55%;
     transform: translateY(-50%);
     width: 36px;
     height: 36px;
@@ -1003,8 +1003,8 @@
     pointer-events: none;
   }
 
-  .mobile-edge-arrow.left  { left: 0px; }
-  .mobile-edge-arrow.right { right: 0px; }
+  .mobile-edge-arrow.left  { left: -4px; }
+  .mobile-edge-arrow.right { right: -4px; }
 
   .mobile-edge-arrow.is-over {
     background: rgba(59, 130, 246, 0.85);
