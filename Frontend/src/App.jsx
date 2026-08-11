@@ -364,14 +364,10 @@ function App() {
     const timeToSet = parseTime(newTask);
     const cleanedText = stripTime(newTask);
     const newTaskObj = { id: newId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
-    const updatedTasks = { ...tasks };
-    if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
-    if (timeToSet) {
+      const updatedTasks = { ...tasks };
+      if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
       updatedTasks["Backlog"].unshift(newTaskObj);
-    } else {
-      updatedTasks["Backlog"].push(newTaskObj);
-    }
-    setTasks(updatedTasks);
+      setTasks(updatedTasks);
     setNewTask("");
     setShowInput(false);
     apiAddTask(newTaskObj);
@@ -394,12 +390,8 @@ function App() {
     const newTasks = { ...tasks };
     if (!newTasks[day]) newTasks[day] = [];
     
-    // Se c'è un orario, inserisci in cima. Altrimenti in fondo.
-    if (timeToSet) {
-      newTasks[day].unshift(newTaskObj);
-    } else {
-      newTasks[day].push(newTaskObj);
-    }
+    // Inserisci sempre in cima
+    newTasks[day].unshift(newTaskObj);
     
     setTasks(newTasks);
     setAddingToDay(null);
