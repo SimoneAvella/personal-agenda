@@ -984,10 +984,10 @@
 
   .mobile-edge-arrow {
     position: fixed;
-    top: 53.7%;
+    top: 52%;
     transform: translateY(-50%);
-    width: 75px;
-    height: 130px;
+    width: 110px;
+    height: 200px;
     background: transparent;
     display: flex;
     align-items: center;
