@@ -984,7 +984,7 @@
 
   .mobile-edge-arrow {
     position: fixed;
-    top: 52%;
+    top: 53.2%;
     transform: translateY(-50%);
     width: 110px;
     height: 200px;
@@ -1018,12 +1018,12 @@
   .mobile-edge-arrow.is-over span {
     background: rgba(59, 130, 246, 0.85);
     color: white;
-    transform: scale(2.4);
+    transform: scale(3.5);
     box-shadow: 0 0 18px rgba(59,130,246,0.6);
   }
 
-  .mobile-edge-arrow.left.is-over span { left: 16px; }
-  .mobile-edge-arrow.right.is-over span { right: 16px; }
+  .mobile-edge-arrow.left.is-over span { left: 22px; }
+  .mobile-edge-arrow.right.is-over span { right: 22px; }
 
   .week-nav-toast {
     position: fixed;
