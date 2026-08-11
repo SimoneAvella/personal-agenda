@@ -778,7 +778,7 @@ function App() {
               </div>
               <div className="backlog-columns mobile-archive-columns">
                 {[0, 1, 2].map((colIdx) => (
-                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`}>
+                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`} onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
                     {colIdx === 0 && showInput && (
                       <div className="input-with-feedback">
                         <textarea className="task-input" placeholder="Inserisci task..." value={newTask} autoFocus onChange={(e) => { setNewTask(e.target.value); }} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } }} />
