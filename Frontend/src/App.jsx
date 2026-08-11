@@ -770,7 +770,7 @@ function App() {
           </div>
         )}
         {showArchiveModal && (
-          <div className="archive-modal-overlay" onClick={() => setShowArchiveModal(false)}>
+          <div className={`archive-modal-overlay ${isDraggingFromBacklog ? 'is-dragging' : ''}`} onClick={() => setShowArchiveModal(false)}>
             <div className="archive-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="archive-modal-header-row">
                 <h2>Attività 📋</h2>
