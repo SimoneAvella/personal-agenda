@@ -983,14 +983,14 @@
 
   .mobile-edge-arrow {
     position: fixed;
-    top: 57%;
+    top: 53%;
     transform: translateY(-50%);
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(51, 65, 85, 0.08);
-    color: rgba(51, 65, 85, 0.35);
-    font-size: 1rem;
+    background: transparent;
+    color: rgba(51, 65, 85, 0.25);
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -999,8 +999,7 @@
     transition: all 0.2s ease;
     touch-action: none;
     user-select: none;
-    backdrop-filter: blur(2px);
-    border: 1.5px solid rgba(51, 65, 85, 0.1);
+    border: none;
     pointer-events: none;
   }
 
