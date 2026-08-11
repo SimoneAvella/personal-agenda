@@ -757,9 +757,9 @@ function App() {
                   <button className="logout-btn" onClick={handleLogout} title="Logout">🚪</button>
                 </div>
               </div>
-              <div className="backlog-columns">
+              <div className="backlog-columns" onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
                 {[0, 1, 2].map((colIdx) => (
-                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`} onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
+                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`}>
                     {colIdx === 0 && showInput && (
                       <div className="inline-day-input-wrapper">
                         <textarea className="inline-day-textarea" placeholder="Inserisci task..." value={newTask} autoFocus rows={2} onChange={(e) => { setNewTask(e.target.value); }} onBlur={() => handleAddTask()} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } if (e.key === 'Escape') { setShowInput(false); setNewTask(""); } }} />
@@ -801,9 +801,9 @@ function App() {
                 <h2>Attività 📋</h2>
                 <button className="archive-close-btn" onClick={() => setShowArchiveModal(false)}>✕</button>
               </div>
-              <div className="backlog-columns mobile-archive-columns">
+              <div className="backlog-columns mobile-archive-columns" onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
                 {[0, 1, 2].map((colIdx) => (
-                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`} disabled={isDraggingFromBacklog && hasMoved} onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
+                  <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`} disabled={isDraggingFromBacklog && hasMoved}>
                     {colIdx === 0 && showInput && (
                       <div className="inline-day-input-wrapper">
                         <textarea className="inline-day-textarea" placeholder="Inserisci task..." value={newTask} autoFocus rows={2} onChange={(e) => { setNewTask(e.target.value); }} onBlur={() => handleAddTask()} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } if (e.key === 'Escape') { setShowInput(false); setNewTask(""); } }} />
