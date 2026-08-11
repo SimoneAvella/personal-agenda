@@ -659,6 +659,11 @@ function App() {
 
   return (
     <div className={`app-container ${draggingEdge ? `edge-active-${draggingEdge}` : ""}`} >
+      {isMobile && (
+        <div className="mobile-top-nav">
+          <span className="mobile-title">Calendario 🗓️</span>
+        </div>
+      )}
       <DndContext 
         sensors={sensors} 
         onDragStart={handleDragStart}
