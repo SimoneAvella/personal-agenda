@@ -986,8 +986,8 @@
     position: fixed;
     top: 52.8%;
     transform: translateY(-50%);
-    width: 170px;
-    height: 320px;
+    width: 100px;
+    height: 180px;
     background: transparent;
     display: flex;
     align-items: center;
