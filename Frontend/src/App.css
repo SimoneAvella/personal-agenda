@@ -983,7 +983,8 @@
 
   .mobile-edge-arrow {
     position: fixed;
-    top: 13%;
+    top: 50%;
+    transform: translateY(-50%);
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -1009,7 +1010,7 @@
   .mobile-edge-arrow.is-over {
     background: rgba(59, 130, 246, 0.85);
     color: white;
-    transform: scale(2.2);
+    transform: translateY(-50%) scale(2.2);
     box-shadow: 0 0 18px rgba(59,130,246,0.6);
     border-color: transparent;
   }
