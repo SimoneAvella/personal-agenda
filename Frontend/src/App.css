@@ -983,13 +983,13 @@
 
   .mobile-edge-arrow {
     position: fixed;
-    top: 50%;
+    top: 57%;
     transform: translateY(-50%);
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(51, 65, 85, 0.18);
-    color: rgba(51, 65, 85, 0.5);
+    background: rgba(51, 65, 85, 0.08);
+    color: rgba(51, 65, 85, 0.35);
     font-size: 1rem;
     display: flex;
     align-items: center;
@@ -1000,12 +1000,12 @@
     touch-action: none;
     user-select: none;
     backdrop-filter: blur(2px);
-    border: 1.5px solid rgba(51, 65, 85, 0.15);
+    border: 1.5px solid rgba(51, 65, 85, 0.1);
     pointer-events: none;
   }
 
-  .mobile-edge-arrow.left  { left: 4px; }
-  .mobile-edge-arrow.right { right: 4px; }
+  .mobile-edge-arrow.left  { left: 0px; }
+  .mobile-edge-arrow.right { right: 0px; }
 
   .mobile-edge-arrow.is-over {
     background: rgba(59, 130, 246, 0.85);
