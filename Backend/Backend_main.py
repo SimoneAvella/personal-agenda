@@ -15,6 +15,7 @@ from sqlalchemy.exc import OperationalError
 import threading
 import time
 from pywebpush import webpush, WebPushException
+from zoneinfo import ZoneInfo
 
 # --- CONFIGURAZIONE ---
 import logging
@@ -125,7 +126,7 @@ def reminder_worker():
             SessionWorker = sessionmaker(bind=engine_worker)
             db = SessionWorker()
             
-            now = datetime.now()
+            now = datetime.now(ZoneInfo("Europe/Rome"))
             currentTime = now.strftime("%H:%M")
             
             weekdays_it = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"]
