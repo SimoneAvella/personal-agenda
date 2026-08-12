@@ -82,33 +82,21 @@ function App() {
 
   const subscribeToPush = async () => {
     try {
-      alert("Step 1: Avvio...");
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        alert("ERRORE: browser non supporta SW o Push");
         setPushStatus('unsupported');
         return;
       }
-      alert("Step 2: Registro SW...");
       const registration = await navigator.serviceWorker.register('/sw.js');
-      alert("Step 3: SW registrato. Chiedo permesso...");
       const permission = await Notification.requestPermission();
-      alert("Step 4: Permesso = " + permission);
       setPushStatus(permission);
-      if (permission === 'denied') {
-        alert("Sblocca le notifiche nelle impostazioni del browser!");
-        return;
-      }
       if (permission === 'granted') {
-        alert("Step 5: Recupero chiave VAPID...");
         const response = await fetch(`${API_BASE_URL}/vapid-public-key`);
         const { publicKey } = await response.json();
-        alert("Step 6: Creo subscription Push...");
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: publicKey
         });
-        alert("Step 7: Salvo sul backend...");
-        const res = await fetch(`${API_BASE_URL}/subscribe`, {
+        await fetch(`${API_BASE_URL}/subscribe`, {
           method: 'POST',
           body: JSON.stringify(subscription),
           headers: {
@@ -116,12 +104,9 @@ function App() {
             'Authorization': `Bearer ${localStorage.getItem("agenda_token")}`
           }
         });
-        const result = await res.json();
-        alert("Step 8 FATTO! Risposta: " + JSON.stringify(result));
         setPushStatus('granted');
       }
     } catch (error) {
-      alert("ERRORE: " + error.message);
       console.error("Push Error:", error);
       setPushStatus('error');
     }
@@ -730,9 +715,6 @@ function App() {
                 <div className="day-column mobile-backlog-column">
                   <h3>MENU AZIONI 📓</h3>
                   <div className="mobile-action-center">
-                    <div className="action-btn-circ-wrapper" onClick={subscribeToPush}>
-                      <button className="action-btn-circ" title="Notifiche" style={{ background: '#3b82f6', borderColor: '#2563eb', pointerEvents: 'none' }}><span className="icon">🔔</span></button>
-                    </div>
                     <DroppableContainer id="archive-zone" className="action-btn-circ-wrapper" onClick={() => setShowArchiveModal(true)}>
                       <button className="action-btn-circ archive" title="Archivio" style={{ pointerEvents: "none" }}><span className="icon">📝 </span></button>
                     </DroppableContainer>
