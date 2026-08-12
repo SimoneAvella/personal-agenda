@@ -1249,6 +1249,7 @@
     z-index: 10;
     font-size: 8px; 
     letter-spacing: -0.01em;
+    margin-top: 0; /* Override any inherited margin */
     margin-bottom: 0;
     padding: 2px 2px; /* Compressed header padding */
     border-bottom: 1px solid #334155;
@@ -1257,6 +1258,12 @@
     font-weight: 700;
     flex-shrink: 0;
     text-align: center;
+    height: 16px; /* Strict height to normalize emoji differences */
+    line-height: 1;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .task-item {
