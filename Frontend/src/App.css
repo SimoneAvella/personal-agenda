@@ -376,7 +376,7 @@
   border-radius: 8px;
   min-width: 300px;
   min-height: 0;
-  padding: 0px 10px 10px 10px;
+  padding: 0px 2px 2px 2px;
   box-sizing: border-box;
   overflow: hidden;
   align-items: stretch;
@@ -469,7 +469,7 @@
   border: 2px solid black;
   width: 100%;
   max-width: none;
-  margin: 0 0 4px 0; /* Reduced from 8px */
+  margin: 0 0 6px 0; /* Slightly more spacing between tasks */
   padding: 4px 4px 4px 3px; /* Reduced vertical padding */
   box-sizing: border-box;
   border-radius: 6px;
@@ -1448,7 +1448,7 @@
   min-height: 0;
   transition: background-color 0.2s ease;
   border-radius: 6px;
-  padding: 4px 5px 3px 5px;
+  padding: 6px 1px 3px 1px;
   scrollbar-width: none;
 }
 
