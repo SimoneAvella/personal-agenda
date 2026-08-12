@@ -127,7 +127,11 @@ def reminder_worker():
             
             now = datetime.now()
             currentTime = now.strftime("%H:%M")
-            todayStr = now.strftime("%Y-%m-%d")
+            
+            weekdays_it = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"]
+            day_name = weekdays_it[now.weekday()]
+            day_num = now.strftime("%d/%m")
+            todayStr = f"{day_name} {day_num}"
             
             tasks = db.query(TaskModel).filter(
                 TaskModel.day == todayStr,
