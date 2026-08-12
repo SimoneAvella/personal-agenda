@@ -774,9 +774,10 @@
     overflow: hidden;
   }
 
-  /* Fix the double border issue on Giovedì (4th element) in mobile grid */
-  .day-column-wrapper:nth-child(4n) {
-    border-right: none;
+  /* In mobile, borders are handled by the grid gap — remove wrapper borders entirely */
+  .day-column-wrapper {
+    border-right: none !important;
+    border: none !important;
   }
 
   .week-container {
