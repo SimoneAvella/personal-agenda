@@ -157,8 +157,8 @@ def reminder_worker():
             print(f"ERRORE REMINDER: {e}")
         time.sleep(60)
 
-# if DATABASE_URL and VAPID_PRIVATE_KEY:
-#     threading.Thread(target=reminder_worker, daemon=True).start()
+if DATABASE_URL and VAPID_PRIVATE_KEY:
+    threading.Thread(target=reminder_worker, daemon=True).start()
 
 def get_db():
     db = SessionLocal()
