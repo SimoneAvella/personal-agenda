@@ -817,7 +817,7 @@
     min-height: 0 !important; 
     background: #f8fafc !important; 
     box-sizing: border-box;
-    border-top: 2px solid #334155 !important; 
+    border-top: none !important; 
     overflow: hidden;
 .is-today {
   border-top: 4px solid #007bff !important;
@@ -1234,7 +1234,7 @@
     letter-spacing: -0.01em;
     margin-bottom: 0;
     padding: 2px 2px; /* Compressed header padding */
-    border-bottom: 2px solid #334155;
+    border-bottom: 1px solid #334155;
     background: white; 
     color: #1e293b;
     font-weight: 700;
