@@ -145,7 +145,7 @@ def reminder_worker():
                                 data=json.dumps({
                                     "title": "PROMEMORIA AGENDA 🚀",
                                     "body": f"È l'ora di: {t.text}",
-                                    "icon": "/logo192.png"
+                                    "icon": "/pwa-icon-512.png"
                                 }),
                                 vapid_private_key=VAPID_PRIVATE_KEY,
                                 vapid_claims=VAPID_CLAIMS
