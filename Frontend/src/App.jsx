@@ -715,6 +715,9 @@ function App() {
                 <div className="day-column mobile-backlog-column">
                   <h3>MENU AZIONI 📓</h3>
                   <div className="mobile-action-center">
+                    <div className="action-btn-circ-wrapper" onClick={subscribeToPush}>
+                      <button className="action-btn-circ" title="Notifiche" style={{ background: '#3b82f6', borderColor: '#2563eb' }}><span className="icon">🔔</span></button>
+                    </div>
                     <DroppableContainer id="archive-zone" className="action-btn-circ-wrapper" onClick={() => setShowArchiveModal(true)}>
                       <button className="action-btn-circ archive" title="Archivio" style={{ pointerEvents: "none" }}><span className="icon">📝 </span></button>
                     </DroppableContainer>
