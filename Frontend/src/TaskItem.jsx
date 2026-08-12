@@ -34,7 +34,7 @@ export default function TaskItem({ task, toggleDone, editTaskText }) {
     cursor: isEditing ? "text" : "grab",
     position: "relative",
     display: "flex",
-    alignItems: "flex-start", 
+    alignItems: "center",
     wordBreak: "break-word",
     transform: CSS.Translate.toString(transform),
     transition,
