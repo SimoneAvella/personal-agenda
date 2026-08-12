@@ -84,18 +84,24 @@ function App() {
     try {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         setPushStatus('unsupported');
+        alert("Il tuo browser non supporta le notifiche push.");
         return;
       }
+      
       const registration = await navigator.serviceWorker.register('/sw.js');
       const permission = await Notification.requestPermission();
       setPushStatus(permission);
-      if (permission === 'granted') {
+      
+      if (permission === 'denied') {
+        alert("Hai bloccato le notifiche in passato! Devi sbloccarle dalle impostazioni del sito (lucchetto in alto a sinistra) nel tuo browser.");
+      } else if (permission === 'granted') {
         const response = await fetch(`${API_BASE_URL}/vapid-public-key`);
         const { publicKey } = await response.json();
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: publicKey
         });
+        
         await fetch(`${API_BASE_URL}/subscribe`, {
           method: 'POST',
           body: JSON.stringify(subscription),
@@ -105,6 +111,7 @@ function App() {
           }
         });
         setPushStatus('granted');
+        alert("Notifiche attivate con successo!");
       }
     } catch (error) {
       console.error("Push Error:", error);
