@@ -63,7 +63,7 @@ export default function TaskItem({ task, toggleDone, editTaskText }) {
         checked={task.done} 
         onChange={toggleDone}
         onPointerDown={(e) => e.stopPropagation()} 
-        style={{ marginTop: task.time ? "4px" : "1px", flexShrink: 0, cursor: "pointer" }} 
+        style={{ marginTop: task.time ? "4px" : "0px", flexShrink: 0, cursor: "pointer" }} 
       />
       
       <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
