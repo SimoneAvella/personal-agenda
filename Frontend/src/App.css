@@ -435,7 +435,7 @@
 
 .backlog-columns {
   display: flex;
-  gap: 10px;
+  gap: 2px;
   width: 100%;
   flex: 1;
   min-height: 0;
