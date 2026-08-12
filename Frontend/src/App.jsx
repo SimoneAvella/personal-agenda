@@ -84,24 +84,18 @@ function App() {
     try {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         setPushStatus('unsupported');
-        alert("Il tuo browser non supporta le notifiche push.");
         return;
       }
-      
       const registration = await navigator.serviceWorker.register('/sw.js');
       const permission = await Notification.requestPermission();
       setPushStatus(permission);
-      
-      if (permission === 'denied') {
-        alert("Hai bloccato le notifiche in passato! Devi sbloccarle dalle impostazioni del sito (lucchetto in alto a sinistra) nel tuo browser.");
-      } else if (permission === 'granted') {
+      if (permission === 'granted') {
         const response = await fetch(`${API_BASE_URL}/vapid-public-key`);
         const { publicKey } = await response.json();
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: publicKey
         });
-        
         await fetch(`${API_BASE_URL}/subscribe`, {
           method: 'POST',
           body: JSON.stringify(subscription),
@@ -111,7 +105,6 @@ function App() {
           }
         });
         setPushStatus('granted');
-        alert("Notifiche attivate con successo!");
       }
     } catch (error) {
       console.error("Push Error:", error);
@@ -722,9 +715,6 @@ function App() {
                 <div className="day-column mobile-backlog-column">
                   <h3>MENU AZIONI 📓</h3>
                   <div className="mobile-action-center">
-                    <div className="action-btn-circ-wrapper" onClick={subscribeToPush}>
-                      <button className="action-btn-circ" title="Notifiche" style={{ background: '#3b82f6', borderColor: '#2563eb' }}><span className="icon">🔔</span></button>
-                    </div>
                     <DroppableContainer id="archive-zone" className="action-btn-circ-wrapper" onClick={() => setShowArchiveModal(true)}>
                       <button className="action-btn-circ archive" title="Archivio" style={{ pointerEvents: "none" }}><span className="icon">📝 </span></button>
                     </DroppableContainer>
