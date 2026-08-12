@@ -774,10 +774,24 @@
     overflow: hidden;
   }
 
-  /* In mobile, borders are handled by the grid gap — remove wrapper borders entirely */
+  /* In mobile, borders are explicitly set to get perfect 1px lines without gaps */
   .day-column-wrapper {
+    border-right: 1px solid black !important;
+    border-bottom: 1px solid black !important;
+    border-top: none !important;
+    border-left: none !important;
+  }
+  
+  /* Remove right border from Giovedì (6th child counting the 2 edge arrows) */
+  .day-column-wrapper:nth-child(6) {
     border-right: none !important;
-    border: none !important;
+  }
+  
+  /* Remove bottom border from Venerdì, Sabato, Domenica (7th, 8th, 9th children) */
+  .day-column-wrapper:nth-child(7),
+  .day-column-wrapper:nth-child(8),
+  .day-column-wrapper:nth-child(9) {
+    border-bottom: none !important;
   }
 
   .week-container {
@@ -788,8 +802,8 @@
     margin-top: 2px;
     border: 2px solid black;
     border-radius: 12px;
-    gap: 2px;
-    background: black;
+    gap: 0;
+    background: #fff;
     overflow: hidden; 
     position: relative;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -818,6 +832,9 @@
     background: #f8fafc !important; 
     box-sizing: border-box;
     border-top: none !important; 
+    border-right: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
     overflow: hidden;
 .is-today {
   border-top: 4px solid #007bff !important;
