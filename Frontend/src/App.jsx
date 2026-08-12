@@ -82,21 +82,33 @@ function App() {
 
   const subscribeToPush = async () => {
     try {
+      alert("Step 1: Avvio...");
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        alert("ERRORE: browser non supporta SW o Push");
         setPushStatus('unsupported');
         return;
       }
+      alert("Step 2: Registro SW...");
       const registration = await navigator.serviceWorker.register('/sw.js');
+      alert("Step 3: SW registrato. Chiedo permesso...");
       const permission = await Notification.requestPermission();
+      alert("Step 4: Permesso = " + permission);
       setPushStatus(permission);
+      if (permission === 'denied') {
+        alert("Sblocca le notifiche nelle impostazioni del browser!");
+        return;
+      }
       if (permission === 'granted') {
+        alert("Step 5: Recupero chiave VAPID...");
         const response = await fetch(`${API_BASE_URL}/vapid-public-key`);
         const { publicKey } = await response.json();
+        alert("Step 6: Creo subscription Push...");
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: publicKey
         });
-        await fetch(`${API_BASE_URL}/subscribe`, {
+        alert("Step 7: Salvo sul backend...");
+        const res = await fetch(`${API_BASE_URL}/subscribe`, {
           method: 'POST',
           body: JSON.stringify(subscription),
           headers: {
@@ -104,9 +116,12 @@ function App() {
             'Authorization': `Bearer ${localStorage.getItem("agenda_token")}`
           }
         });
+        const result = await res.json();
+        alert("Step 8 FATTO! Risposta: " + JSON.stringify(result));
         setPushStatus('granted');
       }
     } catch (error) {
+      alert("ERRORE: " + error.message);
       console.error("Push Error:", error);
       setPushStatus('error');
     }
