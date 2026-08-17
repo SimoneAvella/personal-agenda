@@ -641,7 +641,10 @@ function App() {
     }
 
     if (collisions.length > 0) {
-      const edgeCollision = collisions.find(c => c.id === 'edge-left' || c.id === 'edge-right');
+      const edgeCollision = collisions.find(c => 
+        c.id === 'edge-left' || c.id === 'edge-right' || 
+        c.id === 'prev-week-btn' || c.id === 'next-week-btn'
+      );
       if (edgeCollision) return [edgeCollision];
       return collisions;
     }
