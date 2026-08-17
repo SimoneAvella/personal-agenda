@@ -63,6 +63,7 @@ class TaskModel(Base):
     done = Column(Boolean, default=False)
     col = Column(String)
     time = Column(String, nullable=True) # Orario promemoria
+    reminder_offset = Column(Integer, default=60, nullable=True) # Minuti di anticipo
 
 class SubscriptionModel(Base):
     __tablename__ = "subscriptions"
@@ -107,6 +108,7 @@ if DATABASE_URL and "postgresql" in DATABASE_URL:
     with engine.connect() as conn:
         try:
             conn.execute(text("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS time VARCHAR;"))
+            conn.execute(text("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS reminder_offset INTEGER DEFAULT 60;"))
             conn.commit()
             print("Database Online Riparato!")
         except Exception as e:
@@ -136,27 +138,38 @@ def reminder_worker():
             
             tasks = db.query(TaskModel).filter(
                 TaskModel.day == todayStr,
-                TaskModel.time == currentTime,
+                TaskModel.time != None,
+                TaskModel.time != "",
                 TaskModel.done == False
             ).all()
             
             if tasks and VAPID_PRIVATE_KEY:
                 subscriptions = db.query(SubscriptionModel).all()
                 for t in tasks:
-                    for sub in subscriptions:
-                        try:
-                            webpush(
-                                subscription_info=json.loads(sub.subscription_info),
-                                data=json.dumps({
-                                    "title": "PROMEMORIA AGENDA 🚀",
-                                    "body": f"È l'ora di: {t.text}",
-                                    "icon": "/pwa-icon-512.png"
-                                }),
-                                vapid_private_key=VAPID_PRIVATE_KEY,
-                                vapid_claims=VAPID_CLAIMS
-                            )
-                        except Exception:
-                            pass
+                    offset = t.reminder_offset if t.reminder_offset is not None else 60
+                    try:
+                        task_time_obj = datetime.strptime(t.time, "%H:%M")
+                        task_dt = now.replace(hour=task_time_obj.hour, minute=task_time_obj.minute, second=0, microsecond=0)
+                        trigger_time = task_dt - timedelta(minutes=offset)
+                        trigger_time_str = trigger_time.strftime("%H:%M")
+                    except ValueError:
+                        continue # Skip se formato errato
+                    
+                    if trigger_time_str == currentTime:
+                        for sub in subscriptions:
+                            try:
+                                webpush(
+                                    subscription_info=json.loads(sub.subscription_info),
+                                    data=json.dumps({
+                                        "title": f"Promemoria Task ({t.time})",
+                                        "body": t.text,
+                                        "url": "/"
+                                    }),
+                                    vapid_private_key=VAPID_PRIVATE_KEY,
+                                    vapid_claims=VAPID_CLAIMS
+                                )
+                            except Exception:
+                                pass
             db.close()
         except Exception as e:
             print(f"ERRORE REMINDER: {e}")
@@ -324,7 +337,8 @@ def get_tasks(db: SessionLocal = Depends(get_db), auth: bool = Depends(check_aut
             "text": t.text,
             "done": t.done,
             "col": t.col,
-            "time": t.time # Aggiunto orario
+            "time": t.time, # Aggiunto orario
+            "reminder_offset": t.reminder_offset
         })
     return result
 
@@ -340,7 +354,8 @@ def update_tasks(tasks_dict: dict = Body(...), db: SessionLocal = Depends(get_db
                     text=t.get("text", t.get("task", "")),
                     done=t.get("done", False),
                     col=str(t.get("col", "0")),
-                    time=t.get("time") # Salviamo l'orario
+                    time=t.get("time"), # Salviamo l'orario
+                    reminder_offset=t.get("reminder_offset", 60)
                 )
                 db.add(new_task)
     db.commit()
@@ -358,7 +373,8 @@ async def add_task_atomic(task: dict = Body(...), db: SessionLocal = Depends(get
         text=task.get("text", ""),
         done=task.get("done", False),
         col=str(task.get("col", "0")),
-        time=task.get("time")
+        time=task.get("time"),
+        reminder_offset=task.get("reminder_offset", 60)
     )
     db.add(new_task)
     db.commit()
@@ -369,7 +385,8 @@ async def add_task_atomic(task: dict = Body(...), db: SessionLocal = Depends(get
         "text": new_task.text,
         "done": new_task.done,
         "col": new_task.col,
-        "time": new_task.time
+        "time": new_task.time,
+        "reminder_offset": new_task.reminder_offset
     })
     return {"status": "ok", "task_id": new_task.id}
 
@@ -421,7 +438,8 @@ async def move_task(payload: dict = Body(...), db: SessionLocal = Depends(get_db
             "text": task.text,
             "done": task.done,
             "col": task.col,
-            "time": task.time
+            "time": task.time,
+            "reminder_offset": task.reminder_offset
         })
     return {"status": "ok"}
 

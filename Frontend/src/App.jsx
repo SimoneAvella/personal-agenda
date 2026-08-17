@@ -319,6 +319,17 @@ function App() {
     apiPatchTask(newTasks[day][idx].id, { text: newText });
   };
 
+  const updateTaskPartial = (day, taskId, changes) => {
+    const newTasks = { ...tasks };
+    if (!newTasks[day]) return;
+    const idx = newTasks[day].findIndex(t => t.id === taskId);
+    if (idx === -1) return;
+    newTasks[day] = [...newTasks[day]];
+    newTasks[day][idx] = { ...newTasks[day][idx], ...changes };
+    setTasks(newTasks);
+    apiPatchTask(taskId, changes);
+  };
+
   const restoreTask = (taskId) => {
     const newTasks = { ...tasks };
     if (!newTasks["Trash"]) return;
@@ -710,7 +721,7 @@ function App() {
                       <div className="column-scroll-area" onDoubleClick={() => { setAddingToDay(day); setInlineDayTask(""); }}>
                         <SortableContext items={tasks[day] || []} strategy={verticalListSortingStrategy}>
                           {tasks[day]?.map((t) => (
-                            <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} />
+                            <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id, changes)} />
                           ))}
                         </SortableContext>
                         {addingToDay === day && (

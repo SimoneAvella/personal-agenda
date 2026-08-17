@@ -3,7 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState, useEffect, useRef } from "react";
 
-export default function TaskItem({ task, toggleDone, editTaskText }) {
+export default function TaskItem({ task, toggleDone, editTaskText, updateTask }) {
   const { 
     attributes, 
     listeners, 
@@ -66,10 +66,36 @@ export default function TaskItem({ task, toggleDone, editTaskText }) {
         style={{ marginTop: task.time ? "4px" : "0px", flexShrink: 0, cursor: "pointer" }} 
       />
       
-      <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: "2px" }}>
         {task.time && !isEditing && (
-          <div className="task-time-header">
-            <span className="task-time-label">⏰ {task.time}</span>
+          <div className="task-time-header" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span className="task-time-label">🕒 {task.time}</span>
+            <div onPointerDown={(e) => e.stopPropagation()}>
+              <select 
+                className="reminder-select"
+                value={task.reminder_offset !== undefined ? task.reminder_offset : 60}
+                onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
+                style={{
+                  background: "rgba(0,0,0,0.04)",
+                  border: "1px solid rgba(0,0,0,0.1)",
+                  borderRadius: "4px",
+                  fontSize: "11px",
+                  color: "#475569",
+                  cursor: "pointer",
+                  outline: "none",
+                  padding: "1px 4px",
+                  fontWeight: "bold"
+                }}
+                title="Anticipo Notifica"
+              >
+                <option value={0}>🔔 All'orario</option>
+                <option value={5}>🔔 5m prima</option>
+                <option value={15}>🔔 15m prima</option>
+                <option value={30}>🔔 30m prima</option>
+                <option value={60}>🔔 1h prima</option>
+                <option value={120}>🔔 2h prima</option>
+              </select>
+            </div>
           </div>
         )}
         
