@@ -181,35 +181,37 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(4px);
-  border: 2px solid rgba(0, 0, 0, 0.2);
+  width: 32px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  font-size: 20px;
-  color: rgba(0,0,0,0.6);
+  box-shadow: none;
+  font-size: 16px;
+  color: rgba(0,0,0,0.3);
   transition: all 0.2s ease;
 }
 
 .desktop-floating-nav.left {
-  left: 20px;
+  left: 4px;
 }
 .desktop-floating-nav.right {
-  right: 20px;
+  right: 4px;
 }
 
 .desktop-floating-nav:hover {
   background: rgba(255, 255, 255, 0.95);
-  border-color: black;
+  border: 2px solid black;
   color: black;
-  transform: translateY(-50%) scale(1.05);
+  width: 44px;
+  height: 80px;
+  font-size: 20px;
+  transform: translateY(-50%);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
@@ -217,7 +219,9 @@
   background: #3b82f6;
   border-color: #3b82f6;
   color: white;
-  transform: translateY(-50%) scale(1.2);
+  width: 50px;
+  height: 90px;
+  transform: translateY(-50%);
   box-shadow: 0 8px 24px rgba(59,130,246,0.4);
 }
 
