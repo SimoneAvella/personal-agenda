@@ -66,10 +66,10 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
         style={{ marginTop: task.time ? "4px" : "0px", flexShrink: 0, cursor: "pointer" }} 
       />
       
-      <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: "2px" }}>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: "2px" }}>
         {task.time && !isEditing && (
-          <div className="task-time-header" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span className="task-time-label">🕒 {task.time}</span>
+          <div className="task-time-header" style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "nowrap" }}>
+            <span className="task-time-label" style={{ whiteSpace: "nowrap" }}>⏰ {task.time}</span>
             <div onPointerDown={(e) => e.stopPropagation()}>
               <select 
                 className="reminder-select"
@@ -87,16 +87,17 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
                   outline: "none",
                   padding: "1px 4px",
                   fontWeight: "bold",
-                  textAlign: "center"
+                  textAlign: "center",
+                  whiteSpace: "nowrap"
                 }}
                 title="Anticipo Notifica"
               >
-                <option value={0}>🔔 0 min</option>
-                <option value={5}>🔔 5 min</option>
-                <option value={15}>🔔 15 min</option>
-                <option value={30}>🔔 30 min</option>
-                <option value={60}>🔔 1 h</option>
-                <option value={120}>🔔 2 h</option>
+                <option value={0}>esatto</option>
+                <option value={5}>-5m</option>
+                <option value={15}>-15m</option>
+                <option value={30}>-30m</option>
+                <option value={60}>-1h</option>
+                <option value={120}>-2h</option>
               </select>
             </div>
           </div>
