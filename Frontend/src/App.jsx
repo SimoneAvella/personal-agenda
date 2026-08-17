@@ -674,7 +674,17 @@ function App() {
         measuring={{ droppable: { strategy: MeasuringStrategy.WhileDragging } }}
       >
         <div className="main-layout">
-          <div className="calendar-section">
+          <div className="calendar-section" style={{ position: "relative" }}>
+            {!isMobile && (
+              <>
+                <DroppableContainer id="prev-week-btn" className="desktop-floating-nav left" onClick={prevWeek}>
+                  <span>◀</span>
+                </DroppableContainer>
+                <DroppableContainer id="next-week-btn" className="desktop-floating-nav right" onClick={nextWeek}>
+                  <span>▶</span>
+                </DroppableContainer>
+              </>
+            )}
             <div className="week-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
               {isMobile && (
                 <>
@@ -735,11 +745,7 @@ function App() {
                   <DroppableContainer id="trash-zone" className="trash-drop-zone" title="Trascina qui per eliminare" onClick={() => setShowTrashModal(true)}>
                     <button className="action-btn-circ trash" title="Cestino">🗑️</button>
                   </DroppableContainer>
-                </div>
-                <div className="week-nav-buttons">
-                  <DroppableContainer id="prev-week-btn" className="nav-drop-zone" onClick={prevWeek}><button className="nav-btn">←</button></DroppableContainer>
-                  <DroppableContainer id="next-week-btn" className="nav-drop-zone" onClick={nextWeek}><button className="nav-btn">→</button></DroppableContainer>
-                  <button className="logout-btn" onClick={handleLogout} title="Logout">🚪</button>
+                  <button className="logout-btn" onClick={handleLogout} title="Logout" style={{ marginLeft: "auto" }}>🚪</button>
                 </div>
               </div>
               <div className="backlog-columns" onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>

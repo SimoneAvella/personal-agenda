@@ -177,6 +177,50 @@
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
+.desktop-floating-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  font-size: 20px;
+  color: rgba(0,0,0,0.6);
+  transition: all 0.2s ease;
+}
+
+.desktop-floating-nav.left {
+  left: 20px;
+}
+.desktop-floating-nav.right {
+  right: 20px;
+}
+
+.desktop-floating-nav:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: black;
+  color: black;
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.desktop-floating-nav.is-over {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+  transform: translateY(-50%) scale(1.2);
+  box-shadow: 0 8px 24px rgba(59,130,246,0.4);
+}
+
 #trash-zone.droppable-active {
   background: #fee2e2 !important;
   border-radius: 50%;
