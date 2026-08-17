@@ -8,7 +8,7 @@ import hashlib
 import secrets
 import pyotp
 from datetime import datetime, timedelta
-from sqlalchemy import create_engine, Column, String, Boolean, DateTime, Text
+from sqlalchemy import create_engine, Column, String, Boolean, DateTime, Text, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
