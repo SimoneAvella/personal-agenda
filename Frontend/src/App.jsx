@@ -748,7 +748,6 @@ function App() {
                   <DroppableContainer id="trash-zone" className="trash-drop-zone" title="Trascina qui per eliminare" onClick={() => setShowTrashModal(true)}>
                     <button className="action-btn-circ trash" title="Cestino">🗑️</button>
                   </DroppableContainer>
-                  <button className="logout-btn" onClick={handleLogout} title="Logout" style={{ marginLeft: "auto" }}>🚪</button>
                 </div>
               </div>
               <div className="backlog-columns" onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
