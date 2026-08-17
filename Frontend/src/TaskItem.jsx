@@ -76,6 +76,8 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
                 value={task.reminder_offset !== undefined ? task.reminder_offset : 60}
                 onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
                 style={{
+                  appearance: "none",
+                  WebkitAppearance: "none",
                   background: "rgba(0,0,0,0.04)",
                   border: "1px solid rgba(0,0,0,0.1)",
                   borderRadius: "4px",
@@ -84,7 +86,8 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
                   cursor: "pointer",
                   outline: "none",
                   padding: "1px 4px",
-                  fontWeight: "bold"
+                  fontWeight: "bold",
+                  textAlign: "center"
                 }}
                 title="Anticipo Notifica"
               >
