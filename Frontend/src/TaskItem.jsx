@@ -88,12 +88,12 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
                 }}
                 title="Anticipo Notifica"
               >
-                <option value={0}>🔔 All'orario</option>
-                <option value={5}>🔔 5m prima</option>
-                <option value={15}>🔔 15m prima</option>
-                <option value={30}>🔔 30m prima</option>
-                <option value={60}>🔔 1h prima</option>
-                <option value={120}>🔔 2h prima</option>
+                <option value={0}>🔔 0 min</option>
+                <option value={5}>🔔 5 min</option>
+                <option value={15}>🔔 15 min</option>
+                <option value={30}>🔔 30 min</option>
+                <option value={60}>🔔 1 h</option>
+                <option value={120}>🔔 2 h</option>
               </select>
             </div>
           </div>
