@@ -810,7 +810,7 @@ function App() {
           <div className={`archive-modal-overlay ${(isDraggingFromBacklog && hasMoved) ? 'is-dragging' : ''}`} onClick={() => setShowArchiveModal(false)}>
             <div className="archive-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="archive-modal-header-row">
-                <h2>Attività 📋</h2>
+                <h2>Attività</h2>
                 <button className="archive-close-btn" onClick={() => setShowArchiveModal(false)}>✕</button>
               </div>
               <div className="backlog-columns mobile-archive-columns" onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
