@@ -468,7 +468,7 @@
   letter-spacing: 0.05em;
 }
 
-.left-group {
+.left-group { display: flex; align-items: center; gap: 8px; margin-left: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1683,4 +1683,41 @@
 
 .task-item input[type="checkbox"]:checked {
   border-color: #3b82f6;
+}
+
+/* =========================
+   DESKTOP HEADER BUTTONS
+========================= */
+.backlog-header .add-task-btn, 
+.backlog-header .action-btn-circ.trash {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  border: 1px solid #cbd5e1 !important;
+  background: white !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+  color: #64748b !important;
+}
+
+.backlog-header .add-task-btn:hover, 
+.backlog-header .action-btn-circ.trash:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+  background: #f8fafc !important;
+}
+
+.backlog-header .action-btn-circ.trash {
+  font-size: 15px !important;
+  margin-left: 2px !important;
+}
+
+.left-group {
+  margin-left: 16px;
 }
