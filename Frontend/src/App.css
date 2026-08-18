@@ -409,7 +409,7 @@
 }
 @keyframes overlayFadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes modalScaleIn { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.inline-day-textarea {
+.inline-day-textarea { width: 100%; border: 1px solid #3b82f6; border-radius: 6px; padding: 6px 8px; font-size: 14px; font-family: 'Outfit', sans-serif; resize: none; outline: none; box-sizing: border-box; background: #ffffff; color: #1e293b; box-shadow: 0 4px 8px rgba(59, 130, 246, 0.15); margin-bottom: 6px; /*
   width: 100%;
   border: 1.5px solid #3b82f6;
   border-radius: 8px;
@@ -421,7 +421,7 @@
   box-sizing: border-box;
   background: #eff6ff;
   color: #1e293b;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  */
 }
 
 /* =========================
