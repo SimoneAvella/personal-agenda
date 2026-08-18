@@ -42,8 +42,12 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
 
   const handleSave = () => {
     setIsEditing(false);
-    if (editText.trim() !== "" && editText.trim() !== displayText) {
-      editTaskText(editText.trim());
+    let finalString = editText.trim();
+    if (finalString !== "") {
+      finalString = finalString.charAt(0).toUpperCase() + finalString.slice(1);
+    }
+    if (finalString !== "" && finalString !== displayText) {
+      editTaskText(finalString);
     } else {
       setEditText(displayText);
     }
@@ -106,6 +110,7 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
         {isEditing ? (
           <textarea
             ref={inputRef}
+            spellCheck={false}
             style={{ 
               width: "100%",
               border: "none", 

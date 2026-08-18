@@ -373,7 +373,8 @@ function App() {
     }
     const newId = Date.now().toString();
     const timeToSet = parseTime(newTask);
-    const cleanedText = stripTime(newTask);
+    let cleanedText = stripTime(newTask);
+    cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
     const newTaskObj = { id: newId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
       const updatedTasks = { ...tasks };
       if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
@@ -390,7 +391,8 @@ function App() {
       return;
     }
     const timeToSet = parseTime(inlineDayTask);
-    const cleanedText = stripTime(inlineDayTask);
+    let cleanedText = stripTime(inlineDayTask);
+    cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
     const newTaskObj = {
       id: `task-${day.replace(/\//g, '-')}-${Date.now()}`,
       text: cleanedText,
@@ -726,7 +728,7 @@ function App() {
                         </SortableContext>
                         {addingToDay === day && (
                           <div className="inline-day-input-wrapper" onPointerDown={(e) => e.stopPropagation()}>
-                            <textarea className="inline-day-textarea" placeholder="Cosa devi fare?" value={inlineDayTask} autoFocus rows={2} onChange={(e) => { setInlineDayTask(e.target.value); }} onBlur={() => handleAddTaskToDay(day)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddTaskToDay(day); } if (e.key === 'Escape') { setAddingToDay(null); setInlineDayTask(""); } }} />
+                            <textarea spellCheck={false} className="inline-day-textarea" placeholder="Cosa devi fare?" value={inlineDayTask} autoFocus rows={2} onChange={(e) => { setInlineDayTask(e.target.value); }} onBlur={() => handleAddTaskToDay(day)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddTaskToDay(day); } if (e.key === 'Escape') { setAddingToDay(null); setInlineDayTask(""); } }} />
                           </div>
                         )}
                         <div className="add-task-click-area"></div>
@@ -766,7 +768,7 @@ function App() {
                   <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`}>
                     {colIdx === 0 && showInput && (
                       <div className="inline-day-input-wrapper">
-                        <textarea className="inline-day-textarea" placeholder="Inserisci task..." value={newTask} autoFocus rows={2} onChange={(e) => { setNewTask(e.target.value); }} onBlur={() => handleAddTask()} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } if (e.key === 'Escape') { setShowInput(false); setNewTask(""); } }} />
+                        <textarea spellCheck={false} className="inline-day-textarea" placeholder="Inserisci task..." value={newTask} autoFocus rows={2} onChange={(e) => { setNewTask(e.target.value); }} onBlur={() => handleAddTask()} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } if (e.key === 'Escape') { setShowInput(false); setNewTask(""); } }} />
                       </div>
                     )}
                     <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
@@ -810,7 +812,7 @@ function App() {
                   <DroppableContainer key={`Backlog-col-${colIdx}`} className="activity-column" id={`Backlog-col-${colIdx}`} disabled={isDraggingFromBacklog && hasMoved}>
                     {colIdx === 0 && showInput && (
                       <div className="inline-day-input-wrapper">
-                        <textarea className="inline-day-textarea" placeholder="Inserisci task..." value={newTask} autoFocus rows={2} onChange={(e) => { setNewTask(e.target.value); }} onBlur={() => handleAddTask()} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } if (e.key === 'Escape') { setShowInput(false); setNewTask(""); } }} />
+                        <textarea spellCheck={false} className="inline-day-textarea" placeholder="Inserisci task..." value={newTask} autoFocus rows={2} onChange={(e) => { setNewTask(e.target.value); }} onBlur={() => handleAddTask()} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAddTask(); } if (e.key === 'Escape') { setShowInput(false); setNewTask(""); } }} />
                       </div>
                     )}
                     <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
