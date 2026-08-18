@@ -1689,49 +1689,53 @@
    DESKTOP HEADER BUTTONS
 ========================= */
 .backlog-header .add-task-btn {
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 50% !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 8px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  border: none !important;
-  background: #22c55e !important; /* verde */
-  box-shadow: 0 2px 6px rgba(34,197,94,0.35) !important;
-  transition: all 0.2s ease !important;
+  border: 1px solid #e2e8f0 !important;
+  background: white !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important;
+  transition: all 0.18s ease !important;
   padding: 0 !important;
-  color: white !important;
+  color: #94a3b8 !important; /* grigio tenue di default */
 }
 
 .backlog-header .add-task-btn:hover {
-  transform: translateY(-2px) scale(1.05) !important;
-  box-shadow: 0 6px 12px rgba(34,197,94,0.45) !important;
-  background: #16a34a !important;
+  background: #f0fdf4 !important; /* verde pallidissimo */
+  border-color: #86efac !important;
+  color: #16a34a !important; /* verde scuro */
+  box-shadow: 0 2px 6px rgba(22,163,74,0.15) !important;
+  transform: none !important;
 }
 
 .backlog-header .action-btn-circ.trash {
-  width: 30px !important;
-  height: 30px !important;
-  border-radius: 50% !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 8px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  border: none !important;
-  background: #ef4444 !important; /* rosso */
-  box-shadow: 0 2px 6px rgba(239,68,68,0.35) !important;
-  transition: all 0.2s ease !important;
+  border: 1px solid #e2e8f0 !important;
+  background: white !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important;
+  transition: all 0.18s ease !important;
   padding: 0 !important;
-  color: white !important;
+  color: #94a3b8 !important;
   font-size: 14px !important;
-  margin-left: 2px !important;
+  margin-left: 4px !important;
 }
 
 .backlog-header .action-btn-circ.trash:hover {
-  transform: translateY(-2px) scale(1.05) !important;
-  box-shadow: 0 6px 12px rgba(239,68,68,0.45) !important;
-  background: #dc2626 !important;
+  background: #fff1f2 !important; /* rosso pallidissimo */
+  border-color: #fca5a5 !important;
+  color: #dc2626 !important; /* rosso scuro */
+  box-shadow: 0 2px 6px rgba(220,38,38,0.15) !important;
+  transform: none !important;
 }
 
 .left-group {
