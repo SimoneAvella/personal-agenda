@@ -1674,7 +1674,7 @@
   border-radius: 50%;
   transform: scale(0);
   transition: 120ms transform ease-in-out;
-  background-color: #3b82f6;
+  background-color: #22c55e; /* verde */
 }
 
 .task-item input[type="checkbox"]:checked::before {
@@ -1682,13 +1682,34 @@
 }
 
 .task-item input[type="checkbox"]:checked {
-  border-color: #3b82f6;
+  border-color: #22c55e; /* verde */
 }
 
 /* =========================
    DESKTOP HEADER BUTTONS
 ========================= */
-.backlog-header .add-task-btn, 
+.backlog-header .add-task-btn {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  border: none !important;
+  background: #22c55e !important; /* verde */
+  box-shadow: 0 2px 6px rgba(34,197,94,0.35) !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+  color: white !important;
+}
+
+.backlog-header .add-task-btn:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 6px 12px rgba(34,197,94,0.45) !important;
+  background: #16a34a !important;
+}
+
 .backlog-header .action-btn-circ.trash {
   width: 30px !important;
   height: 30px !important;
@@ -1697,33 +1718,20 @@
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  border: 1.5px solid #475569 !important;
-  background: #f8fafc !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-  font-size: 14px !important;
+  border: none !important;
+  background: #ef4444 !important; /* rosso */
+  box-shadow: 0 2px 6px rgba(239,68,68,0.35) !important;
   transition: all 0.2s ease !important;
   padding: 0 !important;
-  color: #334155 !important; /* più scuro per essere visibili */
-}
-
-.backlog-header .add-task-btn:hover, 
-.backlog-header .action-btn-circ.trash:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-  background: #1e293b !important;
-  border-color: #1e293b !important;
   color: white !important;
-}
-
-.backlog-header .action-btn-circ.trash:hover {
-  background: #ef4444 !important;
-  border-color: #ef4444 !important;
-  color: white !important;
-}
-
-.backlog-header .action-btn-circ.trash {
-  font-size: 15px !important;
+  font-size: 14px !important;
   margin-left: 2px !important;
+}
+
+.backlog-header .action-btn-circ.trash:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 6px 12px rgba(239,68,68,0.45) !important;
+  background: #dc2626 !important;
 }
 
 .left-group {
