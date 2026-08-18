@@ -757,7 +757,7 @@ function App() {
               <div className="backlog-header">
                 <div className="left-group">
                   <h2 className="backlog-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    Attività
+                    Attività 📋
                   </h2>
                   <button className="add-task-btn" onClick={() => setShowInput(true)}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -810,7 +810,7 @@ function App() {
           <div className={`archive-modal-overlay ${(isDraggingFromBacklog && hasMoved) ? 'is-dragging' : ''}`} onClick={() => setShowArchiveModal(false)}>
             <div className="archive-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="archive-modal-header-row">
-                <h2>Attività</h2>
+                <h2>Attività 📋</h2>
                 <button className="archive-close-btn" onClick={() => setShowArchiveModal(false)}>✕</button>
               </div>
               <div className="backlog-columns mobile-archive-columns" onDoubleClick={() => { setShowInput(true); setNewTask(""); }}>
