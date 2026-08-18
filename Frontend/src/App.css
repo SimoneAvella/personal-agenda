@@ -70,7 +70,7 @@
   background: #f8fafc;
   padding: 4px; /* Riduco il padding esterno */
   box-sizing: border-box;
-  color: #334155;
+  color: #1e293b;
   overflow: hidden; 
   position: relative; /* For edge indicators */
   transition: box-shadow 0.3s ease;
@@ -268,23 +268,15 @@
   display: flex;
   width: 100%;
   height: calc(100% - 8px);
-  border: 1px solid #cbd5e1;
+  border: none;
   margin-top: 4px; 
   margin-bottom: 4px;
   position: relative;
-  background: #ffffff;
-  border-radius: 8px;
+  background: transparent;
 }
 
 .week-container::before {
-  content: "";
-  position: absolute;
-  top: 30px; /* Portata ancora più in alto */
-  left: 0;
-  right: 0;
-  height: 2px; /* Ripristinato lo spessore originale */
-  background: black;
-  z-index: 1;
+  display: none;
 }
 
 /* Each day column now has a wrapper that contains the droppable + the add button */
@@ -292,7 +284,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #cbd5e1;
+  border-right: none;
   height: 100%; /* Forza l'altezza massima */
   overflow: hidden;
   position: relative;
@@ -304,7 +296,7 @@
 
 .day-column {
   flex: 1;
-  background: white;
+  background: transparent;
   padding: 5px 4px 10px 4px; /* Ridotto padding superiore */
   display: flex;
   flex-direction: column;
@@ -337,7 +329,8 @@
 }
 
 .day-column-wrapper.is-today-wrapper {
-  background: #f0f9ff;
+  background: rgba(2, 132, 199, 0.03);
+  border-radius: 12px;
 }
 
 .day-column.is-today h3.today-header {
@@ -427,14 +420,13 @@
 ========================= */
 .backlog-sidebar {
   flex: 1;
-  background: white;
-  border: 1px solid #cbd5e1;
+  background: transparent;
+  border: none;
   display: flex;
   flex-direction: column;
   margin-left: 10px;
   margin-top: 4px;
   margin-bottom: 4px;
-  border-radius: 8px;
   min-width: 300px;
   min-height: 0;
   padding: 0px 2px 2px 2px;
@@ -837,8 +829,8 @@
 
   /* In mobile, borders are explicitly set to get perfect 1px lines without gaps */
   .day-column-wrapper {
-    border-right: 1px solid #e2e8f0 !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    border-right: none !important;
+    border-bottom: none !important;
     border-top: none !important;
     border-left: none !important;
   }
@@ -1305,27 +1297,27 @@
 
 
   .day-column h3 {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    font-size: 8px; 
-    letter-spacing: -0.01em;
-    margin-top: 0; /* Override any inherited margin */
-    margin-bottom: 0;
-    padding: 2px 2px; /* Compressed header padding */
-    border-bottom: 1px solid #334155;
-    background: white; 
-    color: #1e293b;
-    font-weight: 700;
-    flex-shrink: 0;
-    text-align: center;
-    height: 16px; /* Strict height to normalize emoji differences */
-    line-height: 1;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-size: 13px; 
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0; 
+  margin-bottom: 0;
+  padding: 8px 4px; 
+  border-bottom: none;
+  background: transparent; 
+  color: #64748b;
+  font-weight: 700;
+  flex-shrink: 0;
+  text-align: center;
+  line-height: 1;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
   .task-item {
     padding: 1px 2px; /* Ultra-compact padding */
@@ -1634,11 +1626,50 @@
     padding: 3px;
     background: #fafafa;
   }
-  .mobile-archive-columns .task-item {
+.mobile-archive-columns .task-item {
     font-size: 10px !important;
     padding: 4px !important;
     margin-bottom: 3px !important;
     line-height: 1.2;
     touch-action: pan-y;
   }
+}
+
+/* =========================
+   CUSTOM CIRCULAR CHECKBOX
+========================= */
+.task-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  border: 2px solid #cbd5e1;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: grid;
+  place-content: center;
+  margin-right: 6px;
+  background: white;
+}
+
+.task-item input[type="checkbox"]::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  background-color: #3b82f6;
+}
+
+.task-item input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+.task-item input[type="checkbox"]:checked {
+  border-color: #3b82f6;
 }
