@@ -196,7 +196,7 @@ async def check_auth(authorization: str = Header(None)):
         session = db.query(SessionModel).filter(SessionModel.token == token).first()
     except OperationalError as e:
         logging.warning(f"⚠️ DB connection error in check_auth: {e}")
-        raise HTTPException(status_code=401, detail="Database connection error")
+        raise HTTPException(status_code=503, detail="Database connection error")
     finally:
         db.close()
     

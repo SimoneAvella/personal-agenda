@@ -35,23 +35,26 @@ export async function checkAuth() {
   const token = localStorage.getItem("agenda_token");
   if (!token) return false;
 
-  const maxRetries = 30; // 30 tentativi ≈ 2.5‑3 minuti, più tempo di attesa per il server Render
-  const retryDelay = 5000; // 5 secondi di pausa tra i tentativi
+  const maxRetries = 30; // 30 tentativi ≈ 2.5‑3 minuti
+  const retryDelay = 5000; // 5 secondi tra i tentativi
 
   for (let i = 0; i < maxRetries; i++) {
     try {
-      // Usiamo un timeout breve per ogni tentativo per non bloccare tutto
-      const res = await api.get(`/auth/check`, { timeout: 5000 });
+      const res = await api.get(`/auth/check`, { timeout: 8000 });
       return res.data.status === "ok";
     } catch (e) {
-      // Se il server risponde 401, il token è proprio scaduto. Esci.
-      if (e.response && e.response.status === 401) {
+      const status = e.response?.status;
+
+      // 401 = token davvero scaduto o non valido → esci
+      if (status === 401) {
+        console.warn("Token non valido o scaduto. Logout.");
         return false;
       }
 
-      // Se è un errore di rete o timeout, il server probabilmente sta dormendo.
+      // 503 = DB temporaneamente non disponibile (Render si sveglia) → riprova
+      // Qualsiasi altro errore di rete/timeout → riprova
       if (i < maxRetries - 1) {
-        console.log(`Risveglio server in corso... (${i + 1}/${maxRetries})`);
+        console.log(`Server in risveglio... (${i + 1}/${maxRetries})`);
         await new Promise(r => setTimeout(r, retryDelay));
         continue;
       }
