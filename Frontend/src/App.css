@@ -784,7 +784,7 @@
     padding: 0 5px 10px 5px; /* Reduced vertical padding */
     height: 100dvh;
     overflow: hidden;
-    background: #f8fafc;
+    background: #e2e8f0;
     display: flex;
     flex-direction: column;
   }
@@ -794,9 +794,9 @@
     align-items: center;
     justify-content: center;
     padding: 6px 10px 4px 10px; 
-    background: #f8fafc;
+    background: #e2e8f0;
     z-index: 100;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #94a3b8;
   }
 
   .mobile-title {
@@ -839,30 +839,31 @@
   }
 
   /* In mobile, borders are explicitly set to get perfect 1px lines without gaps */
+  /* Draw 4x2 grid borders */
   .day-column-wrapper {
-    border-right: none !important;
-    border-bottom: none !important;
+    border-right: 1px solid #94a3b8 !important;
+    border-bottom: 1px solid #94a3b8 !important;
     border-top: none !important;
     border-left: none !important;
   }
   
-  /* Remove right border from Giovedì (6th child counting the 2 edge arrows) */
-  .day-column-wrapper:nth-child(6) {
+  /* Remove right borders for the last column of the grid (5th child is Thursday) */
+  .day-column-wrapper:nth-child(5) {
     border-right: none !important;
   }
   
-  /* Remove bottom border from Venerdì, Sabato, Domenica (7th, 8th, 9th children) */
+  /* Remove bottom borders for the bottom row (6th, 7th, 8th children are Fri, Sat, Sun) */
+  .day-column-wrapper:nth-child(6),
   .day-column-wrapper:nth-child(7),
-  .day-column-wrapper:nth-child(8),
-  .day-column-wrapper:nth-child(9) {
+  .day-column-wrapper:nth-child(8) {
     border-bottom: none !important;
   }
-
+  
   .week-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    height: calc(100% - 2px); /* Stretched to fill full page after FAB removal */
+    height: calc(100% - 2px);
     margin-top: 2px;
     border: 1px solid #94a3b8;
     border-radius: 12px;
@@ -900,6 +901,7 @@
     border-bottom: none !important;
     border-left: none !important;
     overflow: hidden;
+  }
 .is-today {
   border-top: 4px solid #007bff !important;
   background: #f8fbff;
