@@ -1669,20 +1669,22 @@
 
 .task-item input[type="checkbox"]::before {
   content: "";
-  width: 8px;
+  width: 4px;
   height: 8px;
-  border-radius: 50%;
-  transform: scale(0);
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
   transition: 120ms transform ease-in-out;
-  background-color: #22c55e; /* verde */
+  margin-top: -2px;
 }
 
 .task-item input[type="checkbox"]:checked::before {
-  transform: scale(1);
+  transform: rotate(45deg) scale(1);
 }
 
 .task-item input[type="checkbox"]:checked {
-  border-color: #22c55e; /* verde */
+  border-color: #22c55e;
+  background-color: #22c55e;
 }
 
 /* =========================
