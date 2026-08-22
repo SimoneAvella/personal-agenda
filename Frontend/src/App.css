@@ -931,7 +931,7 @@
 }
 
 .task-text-content {
-  font-size: 0.95rem;
+  font-size: 10px;
   color: #1e293b;
   line-height: 1.1;
   width: 100%;
@@ -1312,12 +1312,12 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  font-size: 13px; 
+  font-size: 10px; 
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: 0; 
   margin-bottom: 0;
-  padding: 8px 4px; 
+  padding: 4px 2px; 
   border-bottom: none;
   background: transparent; 
   color: #64748b;
