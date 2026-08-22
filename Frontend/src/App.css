@@ -901,6 +901,9 @@
     border-bottom: none !important;
     border-left: none !important;
     overflow: hidden;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
   }
 .is-today {
   border-top: 4px solid #007bff !important;
@@ -994,10 +997,6 @@
   pointer-events: none;
   background: #ff4d4f05;
 }
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-  }
 
   .mobile-backlog-column .column-scroll-area::-webkit-scrollbar {
     display: block !important; 
