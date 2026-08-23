@@ -1410,13 +1410,13 @@
     border: none;
     border-radius: 12px;
   }
-  .task-item input[type=" checkbox\] {
- appearance: auto !important;
- -webkit-appearance: auto !important;
- }
- .task-item input[type=\checkbox\]::before {
- display: none !important;
- }
+  .task-item input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+  }
+  .task-item input[type="checkbox"]::before {
+    display: none !important;
+  }
 }
 
 @media (min-width: 769px) {
