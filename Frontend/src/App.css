@@ -1348,16 +1348,6 @@
     touch-action: pan-y;
   }
 
-  .task-item input[type="checkbox"] {
-    width: 10px !important; /* Restored small standard size */
-    height: 10px !important;
-    min-width: 10px !important;
-    min-height: 10px !important;
-    margin-left: 1px; /* Positioned very close to the left edge */
-    margin-top: 0;
-    padding: 0;
-    flex-shrink: 0;
-  }
 
   .modal-overlay {
     position: fixed;
@@ -1409,13 +1399,6 @@
     background: #f1f5f9;
     border: none;
     border-radius: 12px;
-  }
-  .task-item input[type="checkbox"] {
-    appearance: auto !important;
-    -webkit-appearance: auto !important;
-  }
-  .task-item input[type="checkbox"]::before {
-    display: none !important;
   }
 }
 
