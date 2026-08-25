@@ -49,7 +49,7 @@ function App() {
   const [draggingEdge, setDraggingEdge] = useState(null);
   const [edgeTimer, setEdgeTimer] = useState(null);
   
-  const EDGE_TIMEOUT = 600;
+  const EDGE_TIMEOUT = 1200;
   const EDGE_THRESHOLD = 80;
 
   const [addingToDay, setAddingToDay] = useState(null);
@@ -114,6 +114,7 @@ function App() {
   
   const activeEdgeRef = useRef(null);
   const weekTimerRef = useRef(null);
+  const weekChangeCountRef = useRef(0);
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
   const dragStartX = useRef(null);
@@ -214,7 +215,8 @@ function App() {
 
           if (oldDay === payload.day) {
             newTasks[payload.day] = [...newTasks[payload.day]];
-            newTasks[payload.day][oldIdx] = payload;
+            // Merge instead of replace to preserve local fields the server may not echo back
+            newTasks[payload.day][oldIdx] = { ...newTasks[payload.day][oldIdx], ...payload };
           } else {
             if (oldDay) {
               newTasks[oldDay] = newTasks[oldDay].filter(t => String(t.id) !== String(payload.id));
@@ -319,15 +321,15 @@ function App() {
     apiPatchTask(newTasks[day][idx].id, { text: newText });
   };
 
-  const updateTaskPartial = (day, taskId, changes) => {
+  const updateTaskPartial = (day, taskKey, changes) => {
     const newTasks = { ...tasks };
     if (!newTasks[day]) return;
-    const idx = newTasks[day].findIndex(t => t.id === taskId);
+    const idx = newTasks[day].findIndex(t => (t.id || t.task) === taskKey);
     if (idx === -1) return;
     newTasks[day] = [...newTasks[day]];
     newTasks[day][idx] = { ...newTasks[day][idx], ...changes };
     setTasks(newTasks);
-    apiPatchTask(taskId, changes);
+    apiPatchTask(taskKey, changes); // Backend shouldn't crash if it expects an ID but gets text, or we could pass t.id if available
   };
 
   const restoreTask = (taskId) => {
@@ -459,19 +461,30 @@ function App() {
     if (!ENABLE_WEEK_EDGE_DRAG) return;
     const { over } = event;
     let edge = null;
-    if (over?.id === 'prev-week-btn' || over?.id === 'edge-left') edge = 'left';
-    else if (over?.id === 'next-week-btn' || over?.id === 'edge-right') edge = 'right';
+
+    if (over?.id === 'prev-week-btn' || over?.id === 'edge-left' || over?.id === 'header-first-day') edge = 'left';
+    else if (over?.id === 'next-week-btn' || over?.id === 'edge-right' || over?.id === 'header-last-day') edge = 'right';
+
     if (edge !== activeEdgeRef.current) {
       if (weekTimerRef.current) clearTimeout(weekTimerRef.current);
       activeEdgeRef.current = edge;
       setDraggingEdge(edge);
-      if (edge) {
-        weekTimerRef.current = setTimeout(() => {
-          if (activeEdgeRef.current === 'left') prevWeek();
-          else if (activeEdgeRef.current === 'right') nextWeek();
-          setDraggingEdge(null);
-          activeEdgeRef.current = null;
-        }, EDGE_TIMEOUT);
+      if (!edge) {
+        // Uscito dalla zona — resetta il contatore
+        weekChangeCountRef.current = 0;
+      } else {
+        const scheduleNext = () => {
+          const timeout = weekChangeCountRef.current === 0 ? EDGE_TIMEOUT : 600;
+          weekTimerRef.current = setTimeout(() => {
+            if (activeEdgeRef.current === 'left') prevWeek();
+            else if (activeEdgeRef.current === 'right') nextWeek();
+            weekChangeCountRef.current += 1;
+            // Riparte automaticamente se siamo ancora sulla zona
+            if (activeEdgeRef.current) scheduleNext();
+            else setDraggingEdge(null);
+          }, timeout);
+        };
+        scheduleNext();
       }
     }
   };
@@ -499,6 +512,7 @@ function App() {
   const handleDragEnd = async (event) => {
     if (weekTimerRef.current) clearTimeout(weekTimerRef.current);
     activeEdgeRef.current = null;
+    weekChangeCountRef.current = 0;
     dragStartX.current = null;
     const { active, over } = event;
     const activeId = active.id;
@@ -690,17 +704,7 @@ function App() {
         measuring={{ droppable: { strategy: MeasuringStrategy.WhileDragging } }}
       >
         <div className="main-layout">
-          <div className="calendar-section" style={{ position: "relative" }}>
-            {!isMobile && (
-              <>
-                <DroppableContainer id="prev-week-btn" className="desktop-floating-nav left" onClick={prevWeek}>
-                  <span>◀</span>
-                </DroppableContainer>
-                <DroppableContainer id="next-week-btn" className="desktop-floating-nav right" onClick={nextWeek}>
-                  <span>▶</span>
-                </DroppableContainer>
-              </>
-            )}
+          <div className="calendar-section">
             <div className="week-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
               {isMobile && (
                 <>
@@ -714,16 +718,40 @@ function App() {
               )}
               {days.map((day, i) => {
                 const isToday = day === getTodayString();
+                const isFirst = i === 0;
+                const isLast = i === days.length - 1;
                 return (
                   <div key={i} className={`day-column-wrapper ${isToday ? 'is-today-wrapper' : ''}`}>
                     <DroppableContainer className={`day-column ${isToday ? 'is-today' : ''}`} id={day}>
                       <div className="day-header-wrapper">
-                        <h3 className={isToday ? "today-header" : ""}>{day}</h3>
+                        {!isMobile && isFirst && (
+                          <DroppableContainer id="prev-week-btn" className="day-nav-btn" onClick={prevWeek} title="Settimana precedente">
+                            <span>◀</span>
+                          </DroppableContainer>
+                        )}
+                        {!isMobile && isFirst && (
+                          <DroppableContainer id="header-first-day" className="day-header-droppable">
+                            <h3 className={isToday ? "today-header" : ""}>{day}</h3>
+                          </DroppableContainer>
+                        )}
+                        {!isMobile && isLast && (
+                          <DroppableContainer id="header-last-day" className="day-header-droppable">
+                            <h3 className={isToday ? "today-header" : ""}>{day}</h3>
+                          </DroppableContainer>
+                        )}
+                        {!isMobile && !isFirst && !isLast && (
+                          <h3 className={isToday ? "today-header" : ""}>{day}</h3>
+                        )}
+                        {!isMobile && isLast && (
+                          <DroppableContainer id="next-week-btn" className="day-nav-btn" onClick={nextWeek} title="Settimana successiva">
+                            <span>▶</span>
+                          </DroppableContainer>
+                        )}
                       </div>
                       <div className="column-scroll-area" onDoubleClick={() => { setAddingToDay(day); setInlineDayTask(""); }}>
                         <SortableContext items={tasks[day] || []} strategy={verticalListSortingStrategy}>
                           {tasks[day]?.map((t) => (
-                            <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id, changes)} />
+                            <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id || t.task, changes)} />
                           ))}
                         </SortableContext>
                         {addingToDay === day && (
@@ -779,7 +807,7 @@ function App() {
                     )}
                     <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
                       {columns[colIdx].map((t) => (
-                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} />
+                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial("Backlog", t.id || t.task, changes)} />
                       ))}
                     </SortableContext>
                   </DroppableContainer>
@@ -823,7 +851,7 @@ function App() {
                     )}
                     <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
                       {columns[colIdx].map((t) => (
-                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} />
+                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial("Backlog", t.id || t.task, changes)} />
                       ))}
                     </SortableContext>
                   </DroppableContainer>

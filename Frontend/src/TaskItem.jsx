@@ -18,6 +18,7 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
   const [isEditing, setIsEditing] = useState(false);
   const displayText = task.text || task.task || "";
   const [editText, setEditText] = useState(displayText);
+  const [editTime, setEditTime] = useState(task.time || "");
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -46,12 +47,36 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     if (finalString !== "") {
       finalString = finalString.charAt(0).toUpperCase() + finalString.slice(1);
     }
-    if (finalString !== "" && finalString !== displayText) {
+    const timeChanged = editTime !== (task.time || "");
+    const textChanged = finalString !== "" && finalString !== displayText;
+    if (textChanged) {
       editTaskText(finalString);
     } else {
       setEditText(displayText);
     }
+    if (timeChanged && updateTask) {
+      // Se l'utente ha svuotato l'orario, manda null; altrimenti il nuovo valore
+      updateTask({ time: editTime.trim() || null });
+    }
   };
+
+  const wrapperRef = useRef(null);
+
+  // Chiudi l'editing se si clicca fuori dal task
+  useEffect(() => {
+    if (!isEditing) return;
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        handleSave();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isEditing, editText, editTime]);
 
   return (
     <div 
@@ -67,46 +92,10 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
         checked={task.done} 
         onChange={toggleDone}
         onPointerDown={(e) => e.stopPropagation()} 
-        style={{ marginTop: task.time ? "4px" : "0px", flexShrink: 0, cursor: "pointer" }} 
+        style={{ flexShrink: 0, cursor: "pointer", alignSelf: "center" }} 
       />
       
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: "2px" }}>
-        {task.time && !isEditing && (
-          <div className="task-time-header" style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "nowrap" }}>
-            <span className="task-time-label" style={{ whiteSpace: "nowrap" }}>⏰ {task.time}</span>
-            <div onPointerDown={(e) => e.stopPropagation()}>
-              <select 
-                className="reminder-select"
-                value={task.reminder_offset !== undefined ? task.reminder_offset : 60}
-                onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
-                style={{
-                  appearance: "none",
-                  WebkitAppearance: "none",
-                  background: "rgba(0,0,0,0.04)",
-                  border: "1px solid rgba(0,0,0,0.1)",
-                  borderRadius: "4px",
-                  fontSize: "11px",
-                  color: "#475569",
-                  cursor: "pointer",
-                  outline: "none",
-                  padding: "1px 4px",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  whiteSpace: "nowrap"
-                }}
-                title="Anticipo Notifica"
-              >
-                <option value={0}>🔔 0 min</option>
-                <option value={5}>🔔 -5m</option>
-                <option value={15}>🔔 -15m</option>
-                <option value={30}>🔔 -30m</option>
-                <option value={60}>🔔 -1h</option>
-                <option value={120}>🔔 -2h</option>
-              </select>
-            </div>
-          </div>
-        )}
-        
+      <div ref={wrapperRef} style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: "2px" }}>
         {isEditing ? (
           <textarea
             ref={inputRef}
@@ -125,7 +114,6 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
             }}
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
-            onBlur={handleSave}
             onPointerDown={(e) => e.stopPropagation()} 
             onKeyDown={(e) => {
               e.stopPropagation();
@@ -141,9 +129,57 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
           />
         ) : (
           <span className="task-text-content">
-            {displayText}
+            {task.time ? "⏰ " : ""}{displayText}
           </span>
         )}
+
+        {isEditing ? (
+          <div className="task-time-header">
+            <input
+              type="time"
+              value={editTime}
+              onChange={(e) => setEditTime(e.target.value)}
+              onPointerDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
+              style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", flexShrink: 1, minWidth: 0 }}
+            />
+            {updateTask && (
+              <select
+                className="reminder-select"
+                value={task.reminder_offset !== undefined ? task.reminder_offset : 60}
+                onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
+                onPointerDown={(e) => e.stopPropagation()}
+                title="Cambia notifica"
+              >
+                <option value={0}>🔔 0m</option>
+                <option value={5}>🔔 -5m</option>
+                <option value={15}>🔔 -15m</option>
+                <option value={30}>🔔 -30m</option>
+                <option value={60}>🔔 -1h</option>
+                <option value={120}>🔔 -2h</option>
+              </select>
+            )}
+          </div>
+        ) : task.time ? (
+          <div className="task-time-header">
+            <span className="task-time-label">{task.time}</span>
+            <select 
+              className="reminder-select"
+              value={task.reminder_offset !== undefined ? task.reminder_offset : 60}
+              onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
+              onPointerDown={(e) => e.stopPropagation()}
+              title="Cambia notifica"
+              style={{ marginLeft: "10px" }}
+            >
+              <option value={0}>🔔 0m</option>
+              <option value={5}>🔔 -5m</option>
+              <option value={15}>🔔 -15m</option>
+              <option value={30}>🔔 -30m</option>
+              <option value={60}>🔔 -1h</option>
+              <option value={120}>🔔 -2h</option>
+            </select>
+          </div>
+        ) : null}
       </div>
     </div>
   );
