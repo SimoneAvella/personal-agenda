@@ -18,6 +18,7 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
   const [isEditing, setIsEditing] = useState(false);
   const displayText = task.text || task.task || "";
   const [editText, setEditText] = useState(displayText);
+  const [editTime, setEditTime] = useState(task.time || "");
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -46,10 +47,16 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     if (finalString !== "") {
       finalString = finalString.charAt(0).toUpperCase() + finalString.slice(1);
     }
-    if (finalString !== "" && finalString !== displayText) {
+    const timeChanged = editTime !== (task.time || "");
+    const textChanged = finalString !== "" && finalString !== displayText;
+    if (textChanged) {
       editTaskText(finalString);
     } else {
       setEditText(displayText);
+    }
+    if (timeChanged && updateTask) {
+      // Se l'utente ha svuotato l'orario, manda null; altrimenti il nuovo valore
+      updateTask({ time: editTime.trim() || null });
     }
   };
 
@@ -67,45 +74,56 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
         checked={task.done} 
         onChange={toggleDone}
         onPointerDown={(e) => e.stopPropagation()} 
-        style={{ marginTop: task.time ? "4px" : "0px", flexShrink: 0, cursor: "pointer" }} 
+        style={{ flexShrink: 0, cursor: "pointer" }} 
       />
       
         <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: "2px" }}>
-        {task.time && !isEditing && (
+        {isEditing ? (
           <div className="task-time-header" style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "nowrap" }}>
-            <span className="task-time-label" style={{ whiteSpace: "nowrap" }}>⏰ {task.time}</span>
-            <div onPointerDown={(e) => e.stopPropagation()}>
-              <select 
-                className="reminder-select"
-                value={task.reminder_offset !== undefined ? task.reminder_offset : 60}
-                onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
-                style={{
-                  appearance: "none",
-                  WebkitAppearance: "none",
-                  background: "rgba(0,0,0,0.04)",
-                  border: "1px solid rgba(0,0,0,0.1)",
-                  borderRadius: "4px",
-                  fontSize: "11px",
-                  color: "#475569",
-                  cursor: "pointer",
-                  outline: "none",
-                  padding: "1px 4px",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  whiteSpace: "nowrap"
+            <input
+              type="time"
+              value={editTime}
+              onChange={(e) => setEditTime(e.target.value)}
+              onPointerDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
+              style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text" }}
+            />
+            {updateTask && (
+              <span
+                className="reminder-badge"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  const offsets = [0, 5, 15, 30, 60, 120];
+                  const currentOffset = task.reminder_offset !== undefined ? task.reminder_offset : 60;
+                  const currentIndex = offsets.indexOf(currentOffset) !== -1 ? offsets.indexOf(currentOffset) : 4;
+                  const nextOffset = offsets[(currentIndex + 1) % offsets.length];
+                  updateTask({ reminder_offset: nextOffset });
                 }}
-                title="Anticipo Notifica"
+                title="Clicca per cambiare l'anticipo della notifica"
               >
-                <option value={0}>🔔 0 min</option>
-                <option value={5}>🔔 -5m</option>
-                <option value={15}>🔔 -15m</option>
-                <option value={30}>🔔 -30m</option>
-                <option value={60}>🔔 -1h</option>
-                <option value={120}>🔔 -2h</option>
-              </select>
-            </div>
+                🔔 {task.reminder_offset === 0 ? '0m' : task.reminder_offset === 5 ? '-5m' : task.reminder_offset === 15 ? '-15m' : task.reminder_offset === 30 ? '-30m' : task.reminder_offset === 60 ? '-1h' : task.reminder_offset === 120 ? '-2h' : '-1h'}
+              </span>
+            )}
           </div>
-        )}
+        ) : task.time ? (
+          <div className="task-time-header" style={{ display: "flex", alignItems: "center", gap: "2px", flexWrap: "nowrap", overflow: "hidden" }}>
+            <span className="task-time-label" style={{ whiteSpace: "nowrap" }}>{task.time}</span>
+            <span
+              className="reminder-badge"
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                const offsets = [0, 5, 15, 30, 60, 120];
+                const currentOffset = task.reminder_offset !== undefined ? task.reminder_offset : 60;
+                const currentIndex = offsets.indexOf(currentOffset) !== -1 ? offsets.indexOf(currentOffset) : 4;
+                const nextOffset = offsets[(currentIndex + 1) % offsets.length];
+                if (updateTask) updateTask({ reminder_offset: nextOffset });
+              }}
+              title="Clicca per cambiare l'anticipo della notifica"
+            >
+              🔔 {task.reminder_offset === 0 ? '0m' : task.reminder_offset === 5 ? '-5m' : task.reminder_offset === 15 ? '-15m' : task.reminder_offset === 30 ? '-30m' : task.reminder_offset === 60 ? '-1h' : task.reminder_offset === 120 ? '-2h' : '-1h'}
+            </span>
+          </div>
+        ) : null}
         
         {isEditing ? (
           <textarea

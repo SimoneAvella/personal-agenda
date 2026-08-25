@@ -779,7 +779,7 @@ function App() {
                     )}
                     <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
                       {columns[colIdx].map((t) => (
-                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} />
+                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial("Backlog", t.id, changes)} />
                       ))}
                     </SortableContext>
                   </DroppableContainer>
@@ -823,7 +823,7 @@ function App() {
                     )}
                     <SortableContext items={columns[colIdx] || []} strategy={verticalListSortingStrategy}>
                       {columns[colIdx].map((t) => (
-                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} />
+                        <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone("Backlog", t.id, t.text || t.task)} editTaskText={(newText) => editTaskText("Backlog", t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial("Backlog", t.id, changes)} />
                       ))}
                     </SortableContext>
                   </DroppableContainer>

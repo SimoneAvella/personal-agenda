@@ -410,7 +410,8 @@ async def update_task_atomic(task_id: str, changes: dict = Body(...), db: Sessio
         "text": task.text,
         "done": task.done,
         "col": task.col,
-        "time": task.time
+        "time": task.time,
+        "reminder_offset": task.reminder_offset
     })
     return {"status": "ok"}
 
