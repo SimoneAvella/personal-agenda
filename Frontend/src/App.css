@@ -225,6 +225,7 @@
   box-shadow: 0 8px 24px rgba(59,130,246,0.4);
 }
 
+
 #trash-zone.droppable-active {
   background: #fee2e2 !important;
   border-radius: 50%;
@@ -354,6 +355,61 @@
   justify-content: space-between;
   padding-bottom: 4px;
   min-height: 32px;
+}
+
+.day-header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.day-header-wrapper h3 {
+  flex: 1;
+  text-align: center;
+}
+
+.day-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  color: rgba(0,0,0,0.3);
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  user-select: none;
+  /* Area di hit più grande senza cambiare layout */
+  padding: 10px;
+  margin: -10px;
+  box-sizing: content-box;
+}
+
+.day-nav-btn:hover {
+  background: rgba(0,0,0,0.07);
+  color: black;
+}
+
+.day-nav-btn.is-over {
+  background: #3b82f6;
+  color: white;
+}
+
+.day-header-droppable {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.day-header-droppable.is-over {
+  background: rgba(59,130,246,0.08);
+  border-radius: 4px;
 }
 
 .day-column-header h3 {
@@ -905,20 +961,63 @@
   background: #f8fbff;
 }
 
+
 .task-time-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+  width: 100%;
   margin-bottom: 2px;
   border-bottom: 1px solid #eee;
   padding-bottom: 2px;
 }
 
-.task-time-label {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #ff4d4f; /* Rosso allerta */
-  display: flex;
-  align-items: center;
+/* ---- Reminder select ---- */
+.reminder-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 4px;
+  color: #475569;
+  cursor: pointer;
+  outline: none;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 7px;
+  padding: 0 5px;
+  height: 16px;
+  line-height: 16px;
+  max-width: 56px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  margin-left: 6px;
 }
 
+.task-time-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  min-width: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ff4d4f;
+}
+
+@media (max-width: 768px) {
+  .reminder-select {
+    font-size: 8px;
+    max-width: 48px;
+    height: 15px;
+    line-height: 15px;
+  }
+}
 .task-item:has(.task-time-header) {
   border-left: 4px solid #ff4d4f;
   background: #fff5f5; /* Rosa/Rosso chiarissimo */
@@ -1642,26 +1741,30 @@
 .task-item input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
-  width: 14px !important;
-  height: 14px !important;
-  min-width: 14px !important;
-  min-height: 14px !important;
-  border: 2px solid #94a3b8;
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  min-height: 12px !important;
+  border: 2px solid #d1d5db;
   border-radius: 50%;
   outline: none;
   cursor: pointer;
   transition: all 0.2s ease;
   display: grid;
   place-content: center;
-  margin-right: 6px;
+  margin-right: 4px;
+  margin-left: 0;
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: 0;
   background: white;
 }
 
 .task-item input[type="checkbox"]::before {
   content: "";
-  width: 4px;
-  height: 8px;
-  border: solid white;
+  width: 3px;
+  height: 6px;
+  border: solid #22c55e;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg) scale(0);
   transition: 120ms transform ease-in-out;
@@ -1673,8 +1776,8 @@
 }
 
 .task-item input[type="checkbox"]:checked {
-  border-color: #22c55e;
-  background-color: #22c55e;
+  border-color: white;
+  background-color: white;
 }
 
 /* =========================
