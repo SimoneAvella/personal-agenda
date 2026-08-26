@@ -3,7 +3,8 @@
 **Personal Agenda** è una web application full-stack progettata per gestire compiti, appuntamenti e note in modo intuitivo attraverso un'interfaccia moderna e reattiva con funzionalità di Drag & Drop. 
 Costruita con un'architettura moderna per supportare aggiornamenti in tempo reale e notifiche push, l'app è completamente installabile su desktop e mobile come **PWA** (Progressive Web App).
 
-<img width="921" height="1841" alt="WhatsApp Image 2026-08-27 at 00 51 21" src="https://github.com/user-attachments/assets/7d944e50-0485-48da-a1a1-1db51526ae5f" />
+<img width="400" height="800" alt="WhatsApp Image 2026-08-27 at 00 51 21" src="https://github.com/user-attachments/assets/57cea4bd-788c-4f04-b9a0-b4e6fb1fec78" />
+
 
 
 
