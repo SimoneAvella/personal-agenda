@@ -238,7 +238,7 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
           />
         ) : (
           <span className="task-text-content">
-            {task.time ? "⏰ " : ""}{displayText}
+            {task.time && <span className="task-alarm-icon">⏰ </span>}{displayText}
           </span>
         )}
 

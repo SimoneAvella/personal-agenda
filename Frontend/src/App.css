@@ -1155,6 +1155,10 @@
   width: 100%;
 }
 
+.task-alarm-icon {
+  font-size: 0.75rem; /* Sveglia più piccola per risparmiare spazio */
+}
+
 /* --- TIME WHEEL PICKER --- */
 .time-wheel-container {
   display: flex;
@@ -1248,6 +1252,10 @@
 
   .task-text-content {
     font-size: 10.5px !important;
+  }
+
+  .task-alarm-icon {
+    font-size: 8px !important; /* Sveglia ancora più piccola su mobile */
   }
 
   .task-time-label {
