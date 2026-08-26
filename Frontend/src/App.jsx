@@ -56,6 +56,7 @@ function App() {
   const [inlineDayTask, setInlineDayTask] = useState("");
   const [newTaskTime, setNewTaskTime] = useState("");
   const notifiedTasksRef = useRef(new Set());
+  const wsConnectedRef = useRef(false); // Traccia se il WebSocket è connesso
 
   // Task ordinati per giorno: prima quelli con orario (cronologici), poi gli altri
   const sortedTasks = useMemo(() => {
@@ -186,7 +187,8 @@ function App() {
     fetchTasks();
 
     const handleFocusOrVisibility = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && !wsConnectedRef.current) {
+        // Ricarica solo se il WebSocket è disconnesso, altrimenti i dati sono già aggiornati
         fetchTasks();
       }
     };
@@ -249,7 +251,9 @@ function App() {
           }
           return newTasks;
         });
-      }
+      },
+      () => { wsConnectedRef.current = true; },   // onConnect
+      () => { wsConnectedRef.current = false; }    // onDisconnect
     );
     return () => {
       if (socket) socket.disconnect();
