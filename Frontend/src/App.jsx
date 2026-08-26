@@ -299,7 +299,9 @@ function App() {
     const idx = newTasks[day].findIndex(t => (t.id ? t.id === taskId : (t.text === taskText || t.task === taskText)));
     if (idx === -1) return;
     if (!newTasks["Trash"]) newTasks["Trash"] = [];
-    const deletedTask = newTasks[day].splice(idx, 1)[0];
+    const sourceList = [...newTasks[day]];
+    const [deletedTask] = sourceList.splice(idx, 1);
+    newTasks[day] = sourceList;
     newTasks["Trash"] = [...newTasks["Trash"], deletedTask];
     setTasks(newTasks);
     try {
