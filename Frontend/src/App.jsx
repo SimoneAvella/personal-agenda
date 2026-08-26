@@ -158,10 +158,15 @@ function App() {
     const data = await getTasks();
     const normalized = {};
     Object.keys(data).forEach(day => {
-      normalized[day] = data[day].map((t, i) => ({
-        ...t,
-        id: String(t.id || `task-${day}-${i}-${Date.now()}`)
-      }));
+      const sorted = data[day]
+        .map((t, i) => ({ ...t, id: String(t.id || `task-${day}-${i}-${Date.now()}`) }))
+        .sort((a, b) => {
+          if (a.time && !b.time) return -1;
+          if (!a.time && b.time) return 1;
+          if (a.time && b.time) return a.time.localeCompare(b.time);
+          return 0;
+        });
+      normalized[day] = sorted;
     });
     setTasks(normalized);
   };
@@ -754,19 +759,9 @@ function App() {
                       </div>
                       <div className="column-scroll-area" onDoubleClick={() => { setAddingToDay(day); setInlineDayTask(""); }}>
                         <SortableContext items={tasks[day] || []} strategy={verticalListSortingStrategy}>
-                          {(tasks[day] || [])
-                            .slice()
-                            .sort((a, b) => {
-                              // Task con time vanno sempre prima
-                              if (a.time && !b.time) return -1;
-                              if (!a.time && b.time) return 1;
-                              // Se entrambi hanno time, ordine cronologico
-                              if (a.time && b.time) return a.time.localeCompare(b.time);
-                              return 0;
-                            })
-                            .map((t) => (
-                              <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id || t.task, changes)} />
-                            ))}
+                          {(tasks[day] || []).map((t) => (
+                            <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id || t.task, changes)} />
+                          ))}
                         </SortableContext>
                         {addingToDay === day && (
                           <div className="inline-day-input-wrapper" onPointerDown={(e) => e.stopPropagation()}>
