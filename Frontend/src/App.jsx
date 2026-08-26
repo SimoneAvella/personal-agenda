@@ -672,7 +672,11 @@ function App() {
         c.id === 'edge-left' || c.id === 'edge-right' || 
         c.id === 'prev-week-btn' || c.id === 'next-week-btn'
       );
-      if (edgeCollision) return [edgeCollision];
+      // Non triggerare cambio settimana se c'è anche archive/trash in collisione
+      const hasArchiveCollision = collisions.some(c => 
+        c.id === 'archive-zone' || c.id === 'trash-zone'
+      );
+      if (edgeCollision && !hasArchiveCollision) return [edgeCollision];
       return collisions;
     }
     

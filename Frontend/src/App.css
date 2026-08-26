@@ -1253,7 +1253,7 @@
     position: fixed;
     top: 52.8%;
     transform: translateY(-50%);
-    width: 100px;
+    width: 36px; /* Ridotto da 100px per non sovrapporsi alla colonna MENU */
     height: 180px;
     background: transparent;
     display: flex;
