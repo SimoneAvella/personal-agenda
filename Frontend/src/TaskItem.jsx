@@ -68,8 +68,8 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     const cleanedText = extractedTime ? stripTime(finalString) : finalString;
     const finalText = cleanedText ? cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1) : finalString;
 
-    // Orario: usa quello estratto dal testo, altrimenti mantieni quello esistente
-    const newTime = extractedTime !== null ? extractedTime : (task.time || null);
+    // Orario: usa quello estratto dal testo, poi quello dell'input time, altrimenti mantieni quello esistente
+    const newTime = extractedTime !== null ? extractedTime : (editTime || task.time || null);
 
     const textChanged = finalText !== displayText;
     const timeChanged = newTime !== (task.time || null);
@@ -239,7 +239,21 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
           </span>
         )}
 
-        {isEditing ? null : task.time ? (
+        {isEditing ? (
+          task.time ? (
+            <div className="task-time-header">
+              <input
+                type="time"
+                value={editTime}
+                onChange={(e) => setEditTime(e.target.value)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
+                style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", flexShrink: 1, minWidth: 0 }}
+              />
+              {updateTask && renderReminderControl()}
+            </div>
+          ) : null
+        ) : task.time ? (
           <div className="task-time-header">
             <span className="task-time-label">{task.time}</span>
             {updateTask && renderReminderControl()}
