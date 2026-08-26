@@ -777,7 +777,7 @@ function App() {
               })}
               {isMobile && (
                 <div className="day-column mobile-backlog-column">
-                  <h3>MENU AZIONI 📓</h3>
+                  <h3>MENU 📋</h3>
                   <div className="mobile-action-center">
                     <DroppableContainer id="archive-zone" className="action-btn-circ-wrapper" onClick={() => setShowArchiveModal(true)}>
                       <button className="action-btn-circ archive" title="Archivio" style={{ pointerEvents: "none" }}><span className="icon">📝 </span></button>
