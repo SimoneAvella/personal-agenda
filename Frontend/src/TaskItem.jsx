@@ -129,8 +129,8 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     document.body
   );
 
-  // Componente reminder: select su desktop, badge su mobile
-  const ReminderControl = ({ style: extraStyle }) => {
+  // Funzione per il rendering del reminder (evita l'errore di nested component)
+  const renderReminderControl = (extraStyle = {}) => {
     if (isMobile) {
       return (
         <>
@@ -238,12 +238,12 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
               onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
               style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", flexShrink: 1, minWidth: 0 }}
             />
-            {updateTask && <ReminderControl />}
+            {updateTask && renderReminderControl()}
           </div>
         ) : task.time ? (
           <div className="task-time-header">
             <span className="task-time-label">{task.time}</span>
-            {updateTask && <ReminderControl />}
+            {updateTask && renderReminderControl()}
           </div>
         ) : null}
       </div>
