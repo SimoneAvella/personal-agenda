@@ -158,15 +158,10 @@ function App() {
     const data = await getTasks();
     const normalized = {};
     Object.keys(data).forEach(day => {
-      const sorted = data[day]
-        .map((t, i) => ({ ...t, id: String(t.id || `task-${day}-${i}-${Date.now()}`) }))
-        .sort((a, b) => {
-          if (a.time && !b.time) return -1;
-          if (!a.time && b.time) return 1;
-          if (a.time && b.time) return a.time.localeCompare(b.time);
-          return 0;
-        });
-      normalized[day] = sorted;
+      normalized[day] = data[day].map((t, i) => ({
+        ...t,
+        id: String(t.id || `task-${day}-${i}-${Date.now()}`)
+      }));
     });
     setTasks(normalized);
   };
