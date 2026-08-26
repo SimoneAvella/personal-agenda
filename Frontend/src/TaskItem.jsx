@@ -238,7 +238,7 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
               onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
               style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", flexShrink: 1, minWidth: 0 }}
             />
-            {updateTask && renderReminderControl()}
+            {updateTask && editTime && renderReminderControl()}
           </div>
         ) : task.time ? (
           <div className="task-time-header">
