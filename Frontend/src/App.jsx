@@ -365,15 +365,14 @@ function App() {
     apiPatchTask(restoredTask.id, { day: "Backlog", done: false });
   };
 
-  const [showEmptyTrashConfirm, setShowEmptyTrashConfirm] = useState(false);
-
   const emptyTrash = () => {
-    const trashTasks = tasks["Trash"] || [];
-    trashTasks.forEach(t => apiDeleteTask(t.id));
-    const newTasks = { ...tasks };
-    newTasks["Trash"] = [];
-    setTasks(newTasks);
-    setShowEmptyTrashConfirm(false);
+    if (window.confirm("Sei sicuro di voler svuotare il cestino definitivamente?")) {
+      const trashTasks = tasks["Trash"] || [];
+      trashTasks.forEach(t => apiDeleteTask(t.id));
+      const newTasks = { ...tasks };
+      newTasks["Trash"] = [];
+      setTasks(newTasks);
+    }
   };
 
   const moveTaskToDay = async (taskId, targetDay) => {
@@ -849,7 +848,7 @@ function App() {
           ) : null}
         </DragOverlay>
         {showTrashModal && (
-          <div className="trash-modal-overlay" onClick={() => { setShowTrashModal(false); setShowEmptyTrashConfirm(false); }}>
+          <div className="trash-modal-overlay" onClick={() => setShowTrashModal(false)}>
             <div className="trash-modal-content" onClick={(e) => e.stopPropagation()}>
               <h2>Cestino 🗑️</h2>
               <div className="trash-items-list">
@@ -857,17 +856,7 @@ function App() {
                   <div key={t.id || idx} className="trash-item"><span>{t.text || t.task}</span><button className="restore-btn" onClick={() => restoreTask(t.id)}>Ripristina</button></div>
                 ))}
               </div>
-              {showEmptyTrashConfirm ? (
-                <div className="empty-trash-confirm">
-                  <span>Svuotare definitivamente?</span>
-                  <div className="empty-trash-confirm-btns">
-                    <button className="empty-trash-btn confirm-yes" onClick={emptyTrash}>Sì, svuota</button>
-                    <button className="empty-trash-btn confirm-no" onClick={() => setShowEmptyTrashConfirm(false)}>Annulla</button>
-                  </div>
-                </div>
-              ) : (
-                <button className="empty-trash-btn" onClick={() => setShowEmptyTrashConfirm(true)}>Svuota</button>
-              )}
+              <button className="empty-trash-btn" onClick={emptyTrash}>Svuota</button>
             </div>
           </div>
         )}
