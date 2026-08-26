@@ -770,7 +770,7 @@ function App() {
                         </SortableContext>
                         {addingToDay === day && (
                           <div className="inline-day-input-wrapper" onPointerDown={(e) => e.stopPropagation()}>
-                            <textarea spellCheck={false} className="inline-day-textarea" placeholder="Cosa devi fare?" value={inlineDayTask} autoFocus rows={2} onChange={(e) => { setInlineDayTask(e.target.value); }} onBlur={() => handleAddTaskToDay(day)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddTaskToDay(day); } if (e.key === 'Escape') { setAddingToDay(null); setInlineDayTask(""); } }} />
+                            <textarea spellCheck={false} className="inline-day-textarea" placeholder="" value={inlineDayTask} autoFocus rows={2} onChange={(e) => { setInlineDayTask(e.target.value); }} onBlur={() => handleAddTaskToDay(day)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAddTaskToDay(day); } if (e.key === 'Escape') { setAddingToDay(null); setInlineDayTask(""); } }} />
                           </div>
                         )}
                         <div className="add-task-click-area"></div>
