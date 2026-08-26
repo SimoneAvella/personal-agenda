@@ -143,7 +143,7 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     document.body
   );
 
-  // Funzione per il rendering del reminder (evita l'errore di nested component)
+  // Funzione per il rendering del reminder
   const renderReminderControl = (extraStyle = {}) => {
     if (isMobile) {
       return (
