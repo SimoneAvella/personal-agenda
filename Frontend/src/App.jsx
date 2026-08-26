@@ -329,7 +329,7 @@ function App() {
     newTasks[day] = [...newTasks[day]];
     newTasks[day][idx] = { ...newTasks[day][idx], ...changes };
     setTasks(newTasks);
-    apiPatchTask(taskKey, changes); // Backend shouldn't crash if it expects an ID but gets text, or we could pass t.id if available
+    apiPatchTask(taskKey, changes);
   };
 
   const restoreTask = (taskId) => {
@@ -337,9 +337,10 @@ function App() {
     if (!newTasks["Trash"]) return;
     const idx = newTasks["Trash"].findIndex(t => t.id === taskId);
     if (idx === -1) return;
+    newTasks["Trash"] = [...newTasks["Trash"]]; // Clone array before splice
     const restoredTask = { ...newTasks["Trash"].splice(idx, 1)[0], done: false };
     if (!newTasks["Backlog"]) newTasks["Backlog"] = [];
-    newTasks["Backlog"].push(restoredTask);
+    newTasks["Backlog"] = [...newTasks["Backlog"], restoredTask];
     setTasks(newTasks);
     apiPatchTask(restoredTask.id, { day: "Backlog", done: false });
   };
@@ -359,9 +360,10 @@ function App() {
     if (!newTasks["Backlog"]) return;
     const idx = newTasks["Backlog"].findIndex(t => t.id === taskId);
     if (idx === -1) return;
+    newTasks["Backlog"] = [...newTasks["Backlog"]]; // Clone array before splice
     const taskToMove = { ...newTasks["Backlog"].splice(idx, 1)[0], done: false };
     if (!newTasks[targetDay]) newTasks[targetDay] = [];
-    newTasks[targetDay].push(taskToMove);
+    newTasks[targetDay] = [...newTasks[targetDay], taskToMove];
     setTasks(newTasks);
     await apiPatchTask(taskToMove.id, { day: targetDay, done: false });
     setMovingTaskId(null);

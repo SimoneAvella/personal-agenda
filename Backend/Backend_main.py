@@ -118,14 +118,14 @@ Base.metadata.create_all(bind=engine)
 
 # --- PROMEMORIA IN BACKGROUND ---
 def reminder_worker():
+    if not DATABASE_URL:
+        return
+        
+    engine_worker = create_engine(DATABASE_URL)
+    SessionWorker = sessionmaker(bind=engine_worker)
+    
     while True:
         try:
-            if not DATABASE_URL:
-                time.sleep(60)
-                continue
-                
-            engine_worker = create_engine(DATABASE_URL)
-            SessionWorker = sessionmaker(bind=engine_worker)
             db = SessionWorker()
             
             now = datetime.now(ZoneInfo("Europe/Rome"))
@@ -186,28 +186,27 @@ def get_db():
         db.close()
 
 # --- DIPENDENZA SICUREZZA ---
-async def check_auth(authorization: str = Header(None)):
+async def check_auth(authorization: str = Header(None), db = Depends(get_db)):
     if not authorization:
         raise HTTPException(status_code=401, detail="Missing Token")
 
     token = authorization.replace("Bearer ", "")
     try:
-        db = SessionLocal()
         session = db.query(SessionModel).filter(SessionModel.token == token).first()
     except OperationalError as e:
         logging.warning(f"⚠️ DB connection error in check_auth: {e}")
         raise HTTPException(status_code=503, detail="Database connection error")
-    finally:
-        db.close()
     
     if not session:
         raise HTTPException(status_code=401, detail="Invalid Token")
     
     if datetime.now() > session.expiry:
-        db = SessionLocal()
-        db.delete(session)
-        db.commit()
-        db.close()
+        try:
+            db.delete(session)
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            logging.warning(f"⚠️ DB connection error during token deletion: {e}")
         raise HTTPException(status_code=401, detail="Token Expired")
     
     return True
