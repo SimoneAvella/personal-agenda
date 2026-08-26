@@ -48,6 +48,14 @@ function App() {
   const [hasMoved, setHasMoved] = useState(false);
   const [draggingEdge, setDraggingEdge] = useState(null);
   const [edgeTimer, setEdgeTimer] = useState(null);
+
+  // Sistema toast
+  const [toasts, setToasts] = useState([]);
+  const showToast = (message, type = 'error') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+  };
   
   const EDGE_TIMEOUT = 1200;
   const EDGE_THRESHOLD = 80;
@@ -326,6 +334,7 @@ function App() {
       await apiPatchTask(deletedTask.id, { day: "Trash", done: false });
     } catch (e) {
       console.error("❌ PATCH deleteTask failed, re-fetching", e);
+      showToast("Errore nell'eliminare il task.");
       fetchTasks();
     }
   };
@@ -423,6 +432,7 @@ function App() {
       }
     } catch (e) {
       console.error("❌ addTask failed", e);
+      showToast("Errore nel salvare il task. Riprova.");
     }
   };
 
@@ -464,6 +474,7 @@ function App() {
       }
     } catch (e) {
       console.error("❌ addTaskToDay failed", e);
+      showToast("Errore nel salvare il task. Riprova.");
     }
   };
 
@@ -606,6 +617,7 @@ function App() {
           await apiPatchTask(foundT.id, { day: "Trash", done: false });
         } catch (e) {
           console.error("❌ PATCH drag-to-trash failed, re-fetching", e);
+          showToast("Errore nello spostare il task nel cestino.");
           fetchTasks();
         }
       }
