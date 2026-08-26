@@ -1024,6 +1024,11 @@
   align-items: flex-end;
 }
 
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
 .reminder-sheet {
   width: 100%;
   background: white;
@@ -1033,11 +1038,6 @@
   flex-direction: column;
   gap: 4px;
   animation: slideUp 0.2s ease;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
 }
 
 .reminder-sheet-handle {
