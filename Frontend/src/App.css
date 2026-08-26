@@ -1251,7 +1251,7 @@
 
   .mobile-edge-arrow {
     position: fixed;
-    top: 52.8%;
+    top: 52.4%;
     transform: translateY(-50%);
     width: 36px; /* Ridotto da 100px per non sovrapporsi alla colonna MENU */
     height: 180px;
