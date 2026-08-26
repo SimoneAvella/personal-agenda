@@ -1198,6 +1198,11 @@
     font-weight: 700;
   }
 
+  .inline-day-textarea,
+  .task-input {
+    font-size: 10.5px !important;
+  }
+
   .reminder-sheet-option {
     font-size: 0.95rem !important;
   }
