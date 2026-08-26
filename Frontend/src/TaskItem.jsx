@@ -3,6 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { parseTime, stripTime } from "./utils/dates";
 
 const REMINDER_OPTIONS = [
   { value: 0,   label: '🔔 Al momento esatto',  short: '🔔0m' },
@@ -62,15 +63,20 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     if (finalString !== "") {
       finalString = finalString.charAt(0).toUpperCase() + finalString.slice(1);
     }
-    const timeChanged = editTime !== (task.time || "");
-    const textChanged = finalString !== "" && finalString !== displayText;
+    // Estrai orario dal testo se presente
+    const extractedTime = parseTime(finalString);
+    const cleanedText = extractedTime ? stripTime(finalString) : finalString;
+    const finalText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
+    const textChanged = finalText !== "" && finalText !== displayText;
+    const timeChanged = extractedTime !== (task.time || null);
+
     if (textChanged) {
-      editTaskText(finalString);
+      editTaskText(finalText);
     } else {
       setEditText(displayText);
     }
-    if (timeChanged && updateTask) {
-      updateTask({ time: editTime.trim() || null });
+    if ((timeChanged || extractedTime) && updateTask) {
+      updateTask({ time: extractedTime || null });
     }
   };
 
@@ -228,19 +234,7 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
           </span>
         )}
 
-        {isEditing ? (
-          <div className="task-time-header">
-            <input
-              type="time"
-              value={editTime}
-              onChange={(e) => setEditTime(e.target.value)}
-              onPointerDown={(e) => e.stopPropagation()}
-              onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
-              style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", flexShrink: 1, minWidth: 0 }}
-            />
-            {updateTask && editTime && renderReminderControl()}
-          </div>
-        ) : task.time ? (
+        {isEditing ? null : task.time ? (
           <div className="task-time-header">
             <span className="task-time-label">{task.time}</span>
             {updateTask && renderReminderControl()}

@@ -24,3 +24,23 @@ export function getTodayString() {
   const dayIndex = d.getDay() === 0 ? 6 : d.getDay() - 1;
   return `${weekdays[dayIndex]} ${dayNum}/${monthNum}`;
 }
+
+export function parseTime(text) {
+  if (!text) return null;
+  const timeMatch = text.match(/\b([01]?\d|2[0-3])[:. ]([0-5]\d)\b/);
+  if (timeMatch) return `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}`;
+  const hourEndMatch = text.match(/\b([01]?\d|2[0-3])\b\s*$/);
+  if (hourEndMatch) return `${hourEndMatch[1].padStart(2, '0')}:00`;
+  const hourStartMatch = text.match(/^\s*\b([01]?\d|2[0-3])\b/);
+  if (hourStartMatch) return `${hourStartMatch[1].padStart(2, '0')}:00`;
+  return null;
+}
+
+export function stripTime(text) {
+  if (!text) return "";
+  let cleaned = text;
+  cleaned = cleaned.replace(/\b([01]?\d|2[0-3])[:. ]([0-5]\d)\b/g, "");
+  cleaned = cleaned.replace(/\b([01]?\d|2[0-3])\b\s*$/, "");
+  cleaned = cleaned.replace(/^\s*\b([01]?\d|2[0-3])\b/g, "");
+  return cleaned.trim();
+}
