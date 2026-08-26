@@ -330,7 +330,7 @@ function App() {
     newTasks[day] = [...newTasks[day]];
     newTasks[day][idx] = { ...newTasks[day][idx], ...changes };
     setTasks(newTasks);
-    apiPatchTask(taskKey, changes); // Backend shouldn't crash if it expects an ID but gets text, or we could pass t.id if available
+    apiPatchTask(newTasks[day][idx].id || taskKey, changes);
   };
 
   const restoreTask = (taskId) => {

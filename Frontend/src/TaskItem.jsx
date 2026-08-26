@@ -63,9 +63,12 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     if (finalString === "") { setEditText(displayText); return; }
     finalString = finalString.charAt(0).toUpperCase() + finalString.slice(1);
 
-    // Estrai orario dal testo se presente
-    const extractedTime = parseTime(finalString);
-    const cleanedText = extractedTime ? stripTime(finalString) : finalString;
+    // Estrai orario dal testo solo se formato esplicito HH:MM o HH.MM (non numero singolo)
+    const strictTimeMatch = finalString.match(/\b([01]?\d|2[0-3])[:.]([0-5]\d)\b/);
+    const extractedTime = strictTimeMatch
+      ? `${strictTimeMatch[1].padStart(2, '0')}:${strictTimeMatch[2]}`
+      : null;
+    const cleanedText = extractedTime ? finalString.replace(/\b([01]?\d|2[0-3])[:.]([0-5]\d)\b/, '').trim() : finalString;
     const finalText = cleanedText ? cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1) : finalString;
 
     // Orario: usa quello estratto dal testo, poi quello dell'input time, altrimenti mantieni quello esistente
