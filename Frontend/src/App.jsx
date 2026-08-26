@@ -48,25 +48,17 @@ function App() {
   const [hasMoved, setHasMoved] = useState(false);
   const [draggingEdge, setDraggingEdge] = useState(null);
   const [edgeTimer, setEdgeTimer] = useState(null);
-
+  
   const EDGE_TIMEOUT = 1200;
   const EDGE_THRESHOLD = 80;
 
   const [addingToDay, setAddingToDay] = useState(null);
   const [inlineDayTask, setInlineDayTask] = useState("");
   const [newTaskTime, setNewTaskTime] = useState("");
-  const [toasts, setToasts] = useState([]);
-  const [detectedTime, setDetectedTime] = useState(null);
-  const [pushStatus, setPushStatus] = useState('pending');
   const notifiedTasksRef = useRef(new Set());
-  const wsConnectedRef = useRef(false);
-  const showToast = (message, type = 'error') => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
-  };
+  const wsConnectedRef = useRef(false); // Traccia se il WebSocket è connesso
 
-  // Task ordinati per giorno
+  // Task ordinati per giorno: prima quelli con orario (cronologici), poi gli altri
   const sortedTasks = useMemo(() => {
     const result = {};
     for (const day of Object.keys(tasks)) {
@@ -99,6 +91,9 @@ function App() {
     cleaned = cleaned.replace(/^\s*\b([01]?\d|2[0-3])\b/g, "");
     return cleaned.trim();
   };
+
+  const [detectedTime, setDetectedTime] = useState(null);
+  const [pushStatus, setPushStatus] = useState('pending');
 
   const subscribeToPush = async () => {
     try {
@@ -331,7 +326,6 @@ function App() {
       await apiPatchTask(deletedTask.id, { day: "Trash", done: false });
     } catch (e) {
       console.error("❌ PATCH deleteTask failed, re-fetching", e);
-      showToast("Errore nell'eliminare il task.");
       fetchTasks();
     }
   };
@@ -396,41 +390,24 @@ function App() {
     setMovingTaskId(null);
   };
 
-  const handleAddTask = async () => {
+  const handleAddTask = () => {
     if (newTask.trim() === "") {
       setShowInput(false);
       setNewTask("");
       return;
     }
-    const tempId = Date.now().toString();
+    const newId = Date.now().toString();
     const timeToSet = parseTime(newTask);
     let cleanedText = stripTime(newTask);
     cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
-    const newTaskObj = { id: tempId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
-    const updatedTasks = { ...tasks };
-    if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
-    updatedTasks["Backlog"].unshift(newTaskObj);
-    setTasks(updatedTasks);
+    const newTaskObj = { id: newId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
+      const updatedTasks = { ...tasks };
+      if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
+      updatedTasks["Backlog"].unshift(newTaskObj);
+      setTasks(updatedTasks);
     setNewTask("");
     setShowInput(false);
-    try {
-      const res = await apiAddTask(newTaskObj);
-      if (res?.task_id) {
-        // Sostituisce l'ID temporaneo con quello reale del server
-        setTasks(prev => {
-          const updated = { ...prev };
-          if (updated["Backlog"]) {
-            updated["Backlog"] = updated["Backlog"].map(t =>
-              t.id === tempId ? { ...t, id: String(res.task_id) } : t
-            );
-          }
-          return updated;
-        });
-      }
-    } catch (e) {
-      console.error("❌ addTask failed", e);
-      showToast("Errore nel salvare il task. Riprova.");
-    }
+    apiAddTask(newTaskObj);
   };
 
   const handleAddTaskToDay = async (day) => {
@@ -441,9 +418,8 @@ function App() {
     const timeToSet = parseTime(inlineDayTask);
     let cleanedText = stripTime(inlineDayTask);
     cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
-    const tempId = `task-${day.replace(/\//g, '-')}-${Date.now()}`;
     const newTaskObj = {
-      id: tempId,
+      id: `task-${day.replace(/\//g, '-')}-${Date.now()}`,
       text: cleanedText,
       done: false,
       time: timeToSet,
@@ -451,28 +427,14 @@ function App() {
     };
     const newTasks = { ...tasks };
     if (!newTasks[day]) newTasks[day] = [];
+    
+    // Inserisci sempre in cima
     newTasks[day].unshift(newTaskObj);
+    
     setTasks(newTasks);
     setAddingToDay(null);
     setInlineDayTask("");
-    try {
-      const res = await apiAddTask(newTaskObj);
-      if (res?.task_id) {
-        // Sostituisce l'ID temporaneo con quello reale del server
-        setTasks(prev => {
-          const updated = { ...prev };
-          if (updated[day]) {
-            updated[day] = updated[day].map(t =>
-              t.id === tempId ? { ...t, id: String(res.task_id) } : t
-            );
-          }
-          return updated;
-        });
-      }
-    } catch (e) {
-      console.error("❌ addTaskToDay failed", e);
-      showToast("Errore nel salvare il task. Riprova.");
-    }
+    await apiAddTask(newTaskObj);
   };
 
   const prevWeek = () => {
@@ -614,7 +576,6 @@ function App() {
           await apiPatchTask(foundT.id, { day: "Trash", done: false });
         } catch (e) {
           console.error("❌ PATCH drag-to-trash failed, re-fetching", e);
-          showToast("Errore nello spostare il task nel cestino.");
           fetchTasks();
         }
       }
@@ -939,15 +900,6 @@ function App() {
       </DndContext>
       {draggingEdge === 'left' && <div className="week-nav-toast active"><span>◀ Prec</span></div>}
       {draggingEdge === 'right' && <div className="week-nav-toast active"><span>Succ ▶</span></div>}
-
-      {/* Toast notifiche errore */}
-      <div className="toast-container">
-        {toasts.map(t => (
-          <div key={t.id} className={`toast toast-${t.type}`}>
-            {t.type === 'error' ? '❌' : '✅'} {t.message}
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
