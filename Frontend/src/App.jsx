@@ -1,6 +1,6 @@
 // BUILD_TEST_12345
 import './App.css';
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 // Feature flag: enable drag‑to‑edge week switching on mobile devices
 const ENABLE_WEEK_EDGE_DRAG = true; // set to false to disable
@@ -56,7 +56,21 @@ function App() {
   const [inlineDayTask, setInlineDayTask] = useState("");
   const [newTaskTime, setNewTaskTime] = useState("");
   const notifiedTasksRef = useRef(new Set());
-  
+
+  // Task ordinati per giorno: prima quelli con orario (cronologici), poi gli altri
+  const sortedTasks = useMemo(() => {
+    const result = {};
+    for (const day of Object.keys(tasks)) {
+      result[day] = [...(tasks[day] || [])].sort((a, b) => {
+        if (a.time && !b.time) return -1;
+        if (!a.time && b.time) return 1;
+        if (a.time && b.time) return a.time.localeCompare(b.time);
+        return 0;
+      });
+    }
+    return result;
+  }, [tasks]);
+
   const parseTime = (text) => {
     if (!text) return null;
     const timeMatch = text.match(/\b([01]?\d|2[0-3])[:. ]([0-5]\d)\b/);
@@ -758,19 +772,9 @@ function App() {
                       </div>
                       <div className="column-scroll-area" onDoubleClick={() => { setAddingToDay(day); setInlineDayTask(""); }}>
                         <SortableContext items={tasks[day] || []} strategy={verticalListSortingStrategy}>
-                          {(tasks[day] || [])
-                            .slice()
-                            .sort((a, b) => {
-                              // Task con time vanno sempre prima
-                              if (a.time && !b.time) return -1;
-                              if (!a.time && b.time) return 1;
-                              // Se entrambi hanno time, ordine cronologico
-                              if (a.time && b.time) return a.time.localeCompare(b.time);
-                              return 0;
-                            })
-                            .map((t) => (
-                              <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id || t.task, changes)} />
-                            ))}
+                          {(sortedTasks[day] || []).map((t) => (
+                            <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id || t.task, changes)} />
+                          ))}
                         </SortableContext>
                         {addingToDay === day && (
                           <div className="inline-day-input-wrapper" onPointerDown={(e) => e.stopPropagation()}>
