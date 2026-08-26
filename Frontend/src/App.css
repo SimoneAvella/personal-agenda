@@ -1007,7 +1007,7 @@
 .task-time-header {
   display: flex;
   align-items: center;
-  gap: 4px; /* Ridotto da 8px */
+  gap: 4px;
   flex-wrap: nowrap;
   overflow: hidden;
   max-width: 100%;
@@ -1016,7 +1016,7 @@
   margin-bottom: 2px;
   border-bottom: 1px solid #eee;
   padding-bottom: 2px;
-  justify-content: space-between; /* Separa orario e campanella */
+  justify-content: space-between;
 }
 
 /* ---- Reminder select (desktop) ---- */
@@ -1039,7 +1039,7 @@
   max-width: 56px;
   flex-shrink: 0;
   box-sizing: border-box;
-  margin-left: 6px;
+  margin-left: auto; /* Spinge la select a destra */
 }
 
 /* ---- Reminder dropdown (desktop) ---- */
