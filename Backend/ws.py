@@ -4,7 +4,7 @@ from fastapi import Depends
 import json
 
 # Create Socket.IO server (async mode for FastAPI)
-sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=["https://mia-agenda.onrender.com"])
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
 
 # Simple connection handler that validates JWT token
 @sio.event

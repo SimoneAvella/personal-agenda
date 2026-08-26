@@ -1,6 +1,6 @@
 // BUILD_TEST_12345
 import './App.css';
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Feature flag: enable drag‑to‑edge week switching on mobile devices
 const ENABLE_WEEK_EDGE_DRAG = true; // set to false to disable
@@ -41,7 +41,6 @@ function App() {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [newTask, setNewTask] = useState("");
   const [showTrashModal, setShowTrashModal] = useState(false);
-  const [showEmptyTrashConfirm, setShowEmptyTrashConfirm] = useState(false);
   const [activeTask, setActiveTask] = useState(null);
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [movingTaskId, setMovingTaskId] = useState(null);
@@ -57,22 +56,7 @@ function App() {
   const [inlineDayTask, setInlineDayTask] = useState("");
   const [newTaskTime, setNewTaskTime] = useState("");
   const notifiedTasksRef = useRef(new Set());
-  const wsConnectedRef = useRef(false); // Traccia se il WebSocket è connesso
-
-  // Task ordinati per giorno: prima quelli con orario (cronologici), poi gli altri
-  const sortedTasks = useMemo(() => {
-    const result = {};
-    for (const day of Object.keys(tasks)) {
-      result[day] = [...(tasks[day] || [])].sort((a, b) => {
-        if (a.time && !b.time) return -1;
-        if (!a.time && b.time) return 1;
-        if (a.time && b.time) return a.time.localeCompare(b.time);
-        return 0;
-      });
-    }
-    return result;
-  }, [tasks]);
-
+  
   const parseTime = (text) => {
     if (!text) return null;
     const timeMatch = text.match(/\b([01]?\d|2[0-3])[:. ]([0-5]\d)\b/);
@@ -188,8 +172,7 @@ function App() {
     fetchTasks();
 
     const handleFocusOrVisibility = () => {
-      if (document.visibilityState === 'visible' && !wsConnectedRef.current) {
-        // Ricarica solo se il WebSocket è disconnesso, altrimenti i dati sono già aggiornati
+      if (document.visibilityState === 'visible') {
         fetchTasks();
       }
     };
@@ -252,9 +235,7 @@ function App() {
           }
           return newTasks;
         });
-      },
-      () => { wsConnectedRef.current = true; },   // onConnect
-      () => { wsConnectedRef.current = false; }    // onDisconnect
+      }
     );
     return () => {
       if (socket) socket.disconnect();
@@ -318,9 +299,7 @@ function App() {
     const idx = newTasks[day].findIndex(t => (t.id ? t.id === taskId : (t.text === taskText || t.task === taskText)));
     if (idx === -1) return;
     if (!newTasks["Trash"]) newTasks["Trash"] = [];
-    const sourceList = [...newTasks[day]];
-    const [deletedTask] = sourceList.splice(idx, 1);
-    newTasks[day] = sourceList;
+    const deletedTask = newTasks[day].splice(idx, 1)[0];
     newTasks["Trash"] = [...newTasks["Trash"], deletedTask];
     setTasks(newTasks);
     try {
@@ -350,7 +329,7 @@ function App() {
     newTasks[day] = [...newTasks[day]];
     newTasks[day][idx] = { ...newTasks[day][idx], ...changes };
     setTasks(newTasks);
-    apiPatchTask(taskKey, changes);
+    apiPatchTask(taskKey, changes); // Backend shouldn't crash if it expects an ID but gets text, or we could pass t.id if available
   };
 
   const restoreTask = (taskId) => {
@@ -358,21 +337,21 @@ function App() {
     if (!newTasks["Trash"]) return;
     const idx = newTasks["Trash"].findIndex(t => t.id === taskId);
     if (idx === -1) return;
-    newTasks["Trash"] = [...newTasks["Trash"]]; // Clone array before splice
     const restoredTask = { ...newTasks["Trash"].splice(idx, 1)[0], done: false };
     if (!newTasks["Backlog"]) newTasks["Backlog"] = [];
-    newTasks["Backlog"] = [...newTasks["Backlog"], restoredTask];
+    newTasks["Backlog"].push(restoredTask);
     setTasks(newTasks);
     apiPatchTask(restoredTask.id, { day: "Backlog", done: false });
   };
 
   const emptyTrash = () => {
-    setShowEmptyTrashConfirm(false);
-    const trashTasks = tasks["Trash"] || [];
-    trashTasks.forEach(t => apiDeleteTask(t.id));
-    const newTasks = { ...tasks };
-    newTasks["Trash"] = [];
-    setTasks(newTasks);
+    if (window.confirm("Sei sicuro di voler svuotare il cestino definitivamente?")) {
+      const trashTasks = tasks["Trash"] || [];
+      trashTasks.forEach(t => apiDeleteTask(t.id));
+      const newTasks = { ...tasks };
+      newTasks["Trash"] = [];
+      setTasks(newTasks);
+    }
   };
 
   const moveTaskToDay = async (taskId, targetDay) => {
@@ -380,48 +359,32 @@ function App() {
     if (!newTasks["Backlog"]) return;
     const idx = newTasks["Backlog"].findIndex(t => t.id === taskId);
     if (idx === -1) return;
-    newTasks["Backlog"] = [...newTasks["Backlog"]]; // Clone array before splice
     const taskToMove = { ...newTasks["Backlog"].splice(idx, 1)[0], done: false };
     if (!newTasks[targetDay]) newTasks[targetDay] = [];
-    newTasks[targetDay] = [...newTasks[targetDay], taskToMove];
+    newTasks[targetDay].push(taskToMove);
     setTasks(newTasks);
     await apiPatchTask(taskToMove.id, { day: targetDay, done: false });
     setMovingTaskId(null);
   };
 
-  const handleAddTask = async () => {
+  const handleAddTask = () => {
     if (newTask.trim() === "") {
       setShowInput(false);
       setNewTask("");
       return;
     }
-    const tempId = Date.now().toString();
+    const newId = Date.now().toString();
     const timeToSet = parseTime(newTask);
     let cleanedText = stripTime(newTask);
     cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
-    const newTaskObj = { id: tempId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
-    const updatedTasks = { ...tasks };
-    if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
-    updatedTasks["Backlog"].unshift(newTaskObj);
-    setTasks(updatedTasks);
+    const newTaskObj = { id: newId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
+      const updatedTasks = { ...tasks };
+      if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
+      updatedTasks["Backlog"].unshift(newTaskObj);
+      setTasks(updatedTasks);
     setNewTask("");
     setShowInput(false);
-    try {
-      const res = await apiAddTask(newTaskObj);
-      if (res?.task_id) {
-        setTasks(prev => {
-          const updated = { ...prev };
-          if (updated["Backlog"]) {
-            updated["Backlog"] = updated["Backlog"].map(t =>
-              t.id === tempId ? { ...t, id: String(res.task_id) } : t
-            );
-          }
-          return updated;
-        });
-      }
-    } catch (e) {
-      console.error("❌ addTask failed", e);
-    }
+    apiAddTask(newTaskObj);
   };
 
   const handleAddTaskToDay = async (day) => {
@@ -432,30 +395,23 @@ function App() {
     const timeToSet = parseTime(inlineDayTask);
     let cleanedText = stripTime(inlineDayTask);
     cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
-    const tempId = `task-${day.replace(/\//g, '-')}-${Date.now()}`;
-    const newTaskObj = { id: tempId, text: cleanedText, done: false, time: timeToSet, day: day };
+    const newTaskObj = {
+      id: `task-${day.replace(/\//g, '-')}-${Date.now()}`,
+      text: cleanedText,
+      done: false,
+      time: timeToSet,
+      day: day
+    };
     const newTasks = { ...tasks };
     if (!newTasks[day]) newTasks[day] = [];
+    
+    // Inserisci sempre in cima
     newTasks[day].unshift(newTaskObj);
+    
     setTasks(newTasks);
     setAddingToDay(null);
     setInlineDayTask("");
-    try {
-      const res = await apiAddTask(newTaskObj);
-      if (res?.task_id) {
-        setTasks(prev => {
-          const updated = { ...prev };
-          if (updated[day]) {
-            updated[day] = updated[day].map(t =>
-              t.id === tempId ? { ...t, id: String(res.task_id) } : t
-            );
-          }
-          return updated;
-        });
-      }
-    } catch (e) {
-      console.error("❌ addTaskToDay failed", e);
-    }
+    await apiAddTask(newTaskObj);
   };
 
   const prevWeek = () => {
@@ -798,9 +754,19 @@ function App() {
                       </div>
                       <div className="column-scroll-area" onDoubleClick={() => { setAddingToDay(day); setInlineDayTask(""); }}>
                         <SortableContext items={tasks[day] || []} strategy={verticalListSortingStrategy}>
-                          {(sortedTasks[day] || []).map((t) => (
-                            <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id || t.task, changes)} />
-                          ))}
+                          {(tasks[day] || [])
+                            .slice()
+                            .sort((a, b) => {
+                              // Task con time vanno sempre prima
+                              if (a.time && !b.time) return -1;
+                              if (!a.time && b.time) return 1;
+                              // Se entrambi hanno time, ordine cronologico
+                              if (a.time && b.time) return a.time.localeCompare(b.time);
+                              return 0;
+                            })
+                            .map((t) => (
+                              <TaskItem key={t.id || t.task} task={t} toggleDone={() => toggleTaskDone(day, t.id, t.text || t.task)} editTaskText={(newText) => editTaskText(day, t.id, t.text || t.task, newText)} updateTask={(changes) => updateTaskPartial(day, t.id || t.task, changes)} />
+                            ))}
                         </SortableContext>
                         {addingToDay === day && (
                           <div className="inline-day-input-wrapper" onPointerDown={(e) => e.stopPropagation()}>
@@ -870,7 +836,7 @@ function App() {
           ) : null}
         </DragOverlay>
         {showTrashModal && (
-          <div className="trash-modal-overlay" onClick={() => { setShowTrashModal(false); setShowEmptyTrashConfirm(false); }}>
+          <div className="trash-modal-overlay" onClick={() => setShowTrashModal(false)}>
             <div className="trash-modal-content" onClick={(e) => e.stopPropagation()}>
               <h2>Cestino 🗑️</h2>
               <div className="trash-items-list">
@@ -878,17 +844,7 @@ function App() {
                   <div key={t.id || idx} className="trash-item"><span>{t.text || t.task}</span><button className="restore-btn" onClick={() => restoreTask(t.id)}>Ripristina</button></div>
                 ))}
               </div>
-              {showEmptyTrashConfirm ? (
-                <div className="empty-trash-confirm">
-                  <span>Svuotare definitivamente?</span>
-                  <div className="empty-trash-confirm-btns">
-                    <button className="empty-trash-btn confirm-yes" onClick={emptyTrash}>Sì, svuota</button>
-                    <button className="empty-trash-btn confirm-no" onClick={() => setShowEmptyTrashConfirm(false)}>Annulla</button>
-                  </div>
-                </div>
-              ) : (
-                <button className="empty-trash-btn" onClick={() => setShowEmptyTrashConfirm(true)}>Svuota</button>
-              )}
+              <button className="empty-trash-btn" onClick={emptyTrash}>Svuota</button>
             </div>
           </div>
         )}

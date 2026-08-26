@@ -102,7 +102,7 @@ export async function deleteTask(id) {
   return res.data;
 }
 
-export function initSocket(onTaskCreated, onTaskUpdated, onTaskDeleted, onConnect, onDisconnect) {
+export function initSocket(onTaskCreated, onTaskUpdated, onTaskDeleted) {
   const token = localStorage.getItem("agenda_token");
   if (!token) return null;
 
@@ -112,8 +112,8 @@ export function initSocket(onTaskCreated, onTaskUpdated, onTaskDeleted, onConnec
     transports: ["websocket"]
   });
 
-  socket.on("connect", () => { console.log("🔗 WS connected"); if (onConnect) onConnect(); });
-  socket.on("disconnect", () => { console.log("❌ WS disconnected"); if (onDisconnect) onDisconnect(); });
+  socket.on("connect", () => console.log("🔗 WS connected"));
+  socket.on("disconnect", () => console.log("❌ WS disconnected"));
 
   socket.on("task_created", payload => {
     if (onTaskCreated) onTaskCreated(payload);
