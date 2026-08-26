@@ -833,6 +833,14 @@
 }
 
 /* =========================
+   KEYFRAMES ANIMATIONS
+========================= */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* =========================
    MOBILE RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
@@ -1022,11 +1030,6 @@
   z-index: 99999;
   display: flex;
   align-items: flex-end;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
 }
 
 .reminder-sheet {
