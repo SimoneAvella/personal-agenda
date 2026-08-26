@@ -68,15 +68,19 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     const cleanedText = extractedTime ? stripTime(finalString) : finalString;
     const finalText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
     const textChanged = finalText !== "" && finalText !== displayText;
-    const timeChanged = extractedTime !== (task.time || null);
+
+    // Se il testo contiene un orario → usa quello nuovo
+    // Se non contiene orario → mantieni quello esistente (non cancellare)
+    const newTime = extractedTime !== null ? extractedTime : (task.time || null);
+    const timeChanged = newTime !== (task.time || null);
 
     if (textChanged) {
       editTaskText(finalText);
     } else {
       setEditText(displayText);
     }
-    if ((timeChanged || extractedTime) && updateTask) {
-      updateTask({ time: extractedTime || null });
+    if (timeChanged && updateTask) {
+      updateTask({ time: newTime });
     }
   };
 
