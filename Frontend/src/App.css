@@ -973,7 +973,7 @@
 .task-time-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px; /* Ridotto da 8px */
   flex-wrap: nowrap;
   overflow: hidden;
   max-width: 100%;
@@ -982,6 +982,7 @@
   margin-bottom: 2px;
   border-bottom: 1px solid #eee;
   padding-bottom: 2px;
+  justify-content: space-between; /* Separa orario e campanella */
 }
 
 /* ---- Reminder select (desktop) ---- */
@@ -1009,17 +1010,19 @@
 
 /* ---- Reminder badge mobile ---- */
 .reminder-badge-mobile {
-  font-size: 0.65rem;
+  font-size: 0.58rem; /* Leggermente ingrandito */
   font-weight: 700;
   color: #475569;
   background: rgba(0,0,0,0.04);
   border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 4px;
-  padding: 1px 5px;
+  border-radius: 3px;
+  padding: 1px 4px; /* Padding leggermente aumentato */
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
   user-select: none;
+  display: inline-block;
+  min-width: fit-content;
 }
 
 /* ---- Bottom sheet reminder ---- */
@@ -1052,7 +1055,7 @@
 }
 
 .reminder-sheet-title {
-  font-size: 0.85rem;
+  font-size: 0.9rem; /* Ingrandito da 0.85rem */
   font-weight: 700;
   color: #94a3b8;
   text-transform: uppercase;
@@ -1062,12 +1065,12 @@
 
 .reminder-sheet-option {
   width: 100%;
-  padding: 14px 16px;
+  padding: 14px 16px; /* Padding standard */
   text-align: left;
   background: none;
   border: none;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 1rem; /* Font standard */
   font-weight: 500;
   color: #1e293b;
   cursor: pointer;
@@ -1183,6 +1186,25 @@
   .task-item {
     margin-bottom: 3px !important; /* Spazio ridotto */
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    font-size: 13px !important; /* Font su mobile */
+  }
+
+  .task-text-content {
+    font-size: 13px !important;
+  }
+
+  .task-time-label {
+    font-size: 13px !important;
+    font-weight: 700;
+  }
+
+  .reminder-sheet-option {
+    font-size: 0.95rem !important;
+  }
+
+  .reminder-badge-mobile {
+    font-size: 0.58rem !important;
+    padding: 1px 4px !important;
   }
 
   /* Base area styling */

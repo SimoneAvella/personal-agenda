@@ -5,12 +5,12 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 const REMINDER_OPTIONS = [
-  { value: 0,   label: '🔔 Al momento esatto',  short: '🔔 0m' },
-  { value: 5,   label: '🔔 5 minuti prima',      short: '🔔 -5m' },
-  { value: 15,  label: '🔔 15 minuti prima',     short: '🔔 -15m' },
-  { value: 30,  label: '🔔 30 minuti prima',     short: '🔔 -30m' },
-  { value: 60,  label: '🔔 1 ora prima',         short: '🔔 -1h' },
-  { value: 120, label: '🔔 2 ore prima',         short: '🔔 -2h' },
+  { value: 0,   label: '🔔 Al momento esatto',  short: '🔔0m' },
+  { value: 5,   label: '🔔 5 minuti prima',      short: '🔔-5m' },
+  { value: 15,  label: '🔔 15 minuti prima',     short: '🔔-15m' },
+  { value: 30,  label: '🔔 30 minuti prima',     short: '🔔-30m' },
+  { value: 60,  label: '🔔 1 ora prima',         short: '🔔-1h' },
+  { value: 120, label: '🔔 2 ore prima',         short: '🔔-2h' },
 ];
 
 export default function TaskItem({ task, toggleDone, editTaskText, updateTask }) {
@@ -93,15 +93,33 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
 
   // Bottom sheet per mobile
   const BottomSheet = () => createPortal(
-    <div className="reminder-sheet-overlay" onPointerDown={() => setShowBottomSheet(false)}>
-      <div className="reminder-sheet" onPointerDown={(e) => e.stopPropagation()}>
+    <div 
+      className="reminder-sheet-overlay" 
+      onClick={(e) => { 
+        e.preventDefault(); 
+        e.stopPropagation(); 
+        setShowBottomSheet(false); 
+      }}
+    >
+      <div 
+        className="reminder-sheet" 
+        onClick={(e) => { 
+          e.preventDefault(); 
+          e.stopPropagation(); 
+        }}
+      >
         <div className="reminder-sheet-handle" />
         <p className="reminder-sheet-title">Anticipo notifica</p>
         {REMINDER_OPTIONS.map(o => (
           <button
             key={o.value}
             className={`reminder-sheet-option ${o.value === currentOffset ? 'active' : ''}`}
-            onPointerDown={(e) => { e.stopPropagation(); updateTask && updateTask({ reminder_offset: o.value }); setShowBottomSheet(false); }}
+            onClick={(e) => { 
+              e.preventDefault(); 
+              e.stopPropagation(); 
+              updateTask && updateTask({ reminder_offset: o.value }); 
+              setShowBottomSheet(false); 
+            }}
           >
             {o.label}
           </button>
@@ -118,7 +136,19 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
         <>
           <span
             className="reminder-badge-mobile"
-            onPointerDown={(e) => { e.stopPropagation(); setShowBottomSheet(true); }}
+            onClick={(e) => { 
+              e.preventDefault();
+              e.stopPropagation(); 
+              setShowBottomSheet(true); 
+            }}
+            onPointerDown={(e) => { 
+              e.preventDefault();
+              e.stopPropagation(); 
+            }}
+            onPointerUp={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
             style={extraStyle}
           >
             {currentOption.short}
@@ -208,12 +238,12 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
               onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
               style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", flexShrink: 1, minWidth: 0 }}
             />
-            {updateTask && <ReminderControl style={{ marginLeft: "10px" }} />}
+            {updateTask && <ReminderControl />}
           </div>
         ) : task.time ? (
           <div className="task-time-header">
             <span className="task-time-label">{task.time}</span>
-            {updateTask && <ReminderControl style={{ marginLeft: "10px" }} />}
+            {updateTask && <ReminderControl />}
           </div>
         ) : null}
       </div>
