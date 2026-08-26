@@ -61,6 +61,10 @@ pnpm-debug.log*
 # File temporanei / backup
 # ===========================
 migra_dati.py
+genera_hash.py
+fix.py
+_orig_*.txt
+old_*.css
 Frontend/src/App_final_fix.jsx
 Frontend/src/l.code-workspace
 *.code-workspace
