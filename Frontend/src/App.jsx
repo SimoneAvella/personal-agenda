@@ -942,6 +942,15 @@ function App() {
       </DndContext>
       {draggingEdge === 'left' && <div className="week-nav-toast active"><span>◀ Prec</span></div>}
       {draggingEdge === 'right' && <div className="week-nav-toast active"><span>Succ ▶</span></div>}
+
+      {/* Toast notifiche errore */}
+      <div className="toast-container">
+        {toasts.map(t => (
+          <div key={t.id} className={`toast toast-${t.type}`}>
+            {t.type === 'error' ? '❌' : '✅'} {t.message}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
