@@ -1155,8 +1155,12 @@
   width: 100%;
 }
 
-.task-alarm-icon {
-  font-size: 0.75rem; /* Sveglia più piccola per risparmiare spazio */
+.task-text-content .task-alarm-icon {
+  display: inline-block;
+  vertical-align: baseline;
+  transform: scale(0.7); /* Riduce l'emoji del 30% */
+  transform-origin: left center;
+  margin-right: -2px; /* Compensa lo spazio extra dello scale */
 }
 
 /* --- TIME WHEEL PICKER --- */
@@ -1255,7 +1259,10 @@
   }
 
   .task-alarm-icon {
-    font-size: 8px !important; /* Sveglia ancora più piccola su mobile */
+    display: inline-block !important;
+    transform: scale(0.65) !important; /* Ancora più piccola su mobile */
+    transform-origin: left center !important;
+    margin-right: -3px !important;
   }
 
   .task-time-label {
