@@ -60,27 +60,28 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
   const handleSave = () => {
     setIsEditing(false);
     let finalString = editText.trim();
-    if (finalString !== "") {
-      finalString = finalString.charAt(0).toUpperCase() + finalString.slice(1);
-    }
+    if (finalString === "") { setEditText(displayText); return; }
+    finalString = finalString.charAt(0).toUpperCase() + finalString.slice(1);
+
     // Estrai orario dal testo se presente
     const extractedTime = parseTime(finalString);
     const cleanedText = extractedTime ? stripTime(finalString) : finalString;
-    const finalText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
-    const textChanged = finalText !== "" && finalText !== displayText;
+    const finalText = cleanedText ? cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1) : finalString;
 
-    // Se il testo contiene un orario → usa quello nuovo
-    // Se non contiene orario → mantieni quello esistente (non cancellare)
+    // Orario: usa quello estratto dal testo, altrimenti mantieni quello esistente
     const newTime = extractedTime !== null ? extractedTime : (task.time || null);
+
+    const textChanged = finalText !== displayText;
     const timeChanged = newTime !== (task.time || null);
 
-    if (textChanged) {
-      editTaskText(finalText);
+    // Manda tutto in un unico PATCH per evitare race condition
+    if (textChanged || timeChanged) {
+      const changes = { text: finalText };
+      if (timeChanged) changes.time = newTime;
+      if (updateTask) updateTask(changes);
+      if (textChanged) editTaskText(finalText);
     } else {
       setEditText(displayText);
-    }
-    if (timeChanged && updateTask) {
-      updateTask({ time: newTime });
     }
   };
 
