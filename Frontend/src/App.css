@@ -1496,7 +1496,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    font-size: 12px; 
+    font-size: 10px; 
     letter-spacing: -0.01em;
     margin-top: 0; /* Override any inherited margin */
     margin-bottom: 0;
