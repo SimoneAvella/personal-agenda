@@ -41,6 +41,7 @@ function App() {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [newTask, setNewTask] = useState("");
   const [showTrashModal, setShowTrashModal] = useState(false);
+  const [showEmptyTrashConfirm, setShowEmptyTrashConfirm] = useState(false);
   const [activeTask, setActiveTask] = useState(null);
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [movingTaskId, setMovingTaskId] = useState(null);
@@ -366,13 +367,12 @@ function App() {
   };
 
   const emptyTrash = () => {
-    if (window.confirm("Sei sicuro di voler svuotare il cestino definitivamente?")) {
-      const trashTasks = tasks["Trash"] || [];
-      trashTasks.forEach(t => apiDeleteTask(t.id));
-      const newTasks = { ...tasks };
-      newTasks["Trash"] = [];
-      setTasks(newTasks);
-    }
+    setShowEmptyTrashConfirm(false);
+    const trashTasks = tasks["Trash"] || [];
+    trashTasks.forEach(t => apiDeleteTask(t.id));
+    const newTasks = { ...tasks };
+    newTasks["Trash"] = [];
+    setTasks(newTasks);
   };
 
   const moveTaskToDay = async (taskId, targetDay) => {
@@ -389,24 +389,39 @@ function App() {
     setMovingTaskId(null);
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     if (newTask.trim() === "") {
       setShowInput(false);
       setNewTask("");
       return;
     }
-    const newId = Date.now().toString();
+    const tempId = Date.now().toString();
     const timeToSet = parseTime(newTask);
     let cleanedText = stripTime(newTask);
     cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
-    const newTaskObj = { id: newId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
-      const updatedTasks = { ...tasks };
-      if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
-      updatedTasks["Backlog"].unshift(newTaskObj);
-      setTasks(updatedTasks);
+    const newTaskObj = { id: tempId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
+    const updatedTasks = { ...tasks };
+    if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
+    updatedTasks["Backlog"].unshift(newTaskObj);
+    setTasks(updatedTasks);
     setNewTask("");
     setShowInput(false);
-    apiAddTask(newTaskObj);
+    try {
+      const res = await apiAddTask(newTaskObj);
+      if (res?.task_id) {
+        setTasks(prev => {
+          const updated = { ...prev };
+          if (updated["Backlog"]) {
+            updated["Backlog"] = updated["Backlog"].map(t =>
+              t.id === tempId ? { ...t, id: String(res.task_id) } : t
+            );
+          }
+          return updated;
+        });
+      }
+    } catch (e) {
+      console.error("❌ addTask failed", e);
+    }
   };
 
   const handleAddTaskToDay = async (day) => {
@@ -417,23 +432,30 @@ function App() {
     const timeToSet = parseTime(inlineDayTask);
     let cleanedText = stripTime(inlineDayTask);
     cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
-    const newTaskObj = {
-      id: `task-${day.replace(/\//g, '-')}-${Date.now()}`,
-      text: cleanedText,
-      done: false,
-      time: timeToSet,
-      day: day
-    };
+    const tempId = `task-${day.replace(/\//g, '-')}-${Date.now()}`;
+    const newTaskObj = { id: tempId, text: cleanedText, done: false, time: timeToSet, day: day };
     const newTasks = { ...tasks };
     if (!newTasks[day]) newTasks[day] = [];
-    
-    // Inserisci sempre in cima
     newTasks[day].unshift(newTaskObj);
-    
     setTasks(newTasks);
     setAddingToDay(null);
     setInlineDayTask("");
-    await apiAddTask(newTaskObj);
+    try {
+      const res = await apiAddTask(newTaskObj);
+      if (res?.task_id) {
+        setTasks(prev => {
+          const updated = { ...prev };
+          if (updated[day]) {
+            updated[day] = updated[day].map(t =>
+              t.id === tempId ? { ...t, id: String(res.task_id) } : t
+            );
+          }
+          return updated;
+        });
+      }
+    } catch (e) {
+      console.error("❌ addTaskToDay failed", e);
+    }
   };
 
   const prevWeek = () => {
@@ -848,7 +870,7 @@ function App() {
           ) : null}
         </DragOverlay>
         {showTrashModal && (
-          <div className="trash-modal-overlay" onClick={() => setShowTrashModal(false)}>
+          <div className="trash-modal-overlay" onClick={() => { setShowTrashModal(false); setShowEmptyTrashConfirm(false); }}>
             <div className="trash-modal-content" onClick={(e) => e.stopPropagation()}>
               <h2>Cestino 🗑️</h2>
               <div className="trash-items-list">
@@ -856,7 +878,17 @@ function App() {
                   <div key={t.id || idx} className="trash-item"><span>{t.text || t.task}</span><button className="restore-btn" onClick={() => restoreTask(t.id)}>Ripristina</button></div>
                 ))}
               </div>
-              <button className="empty-trash-btn" onClick={emptyTrash}>Svuota</button>
+              {showEmptyTrashConfirm ? (
+                <div className="empty-trash-confirm">
+                  <span>Svuotare definitivamente?</span>
+                  <div className="empty-trash-confirm-btns">
+                    <button className="empty-trash-btn confirm-yes" onClick={emptyTrash}>Sì, svuota</button>
+                    <button className="empty-trash-btn confirm-no" onClick={() => setShowEmptyTrashConfirm(false)}>Annulla</button>
+                  </div>
+                </div>
+              ) : (
+                <button className="empty-trash-btn" onClick={() => setShowEmptyTrashConfirm(true)}>Svuota</button>
+              )}
             </div>
           </div>
         )}
