@@ -55,18 +55,18 @@ function App() {
   const [addingToDay, setAddingToDay] = useState(null);
   const [inlineDayTask, setInlineDayTask] = useState("");
   const [newTaskTime, setNewTaskTime] = useState("");
-  const notifiedTasksRef = useRef(new Set());
-  const wsConnectedRef = useRef(false); // Traccia se il WebSocket è connesso
-
-  // Sistema toast - dichiarato dopo tutti gli useState
   const [toasts, setToasts] = useState([]);
+  const [detectedTime, setDetectedTime] = useState(null);
+  const [pushStatus, setPushStatus] = useState('pending');
+  const notifiedTasksRef = useRef(new Set());
+  const wsConnectedRef = useRef(false);
   const showToast = (message, type = 'error') => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message, type }]);
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
   };
 
-  // Task ordinati per giorno: prima quelli con orario (cronologici), poi gli altri
+  // Task ordinati per giorno
   const sortedTasks = useMemo(() => {
     const result = {};
     for (const day of Object.keys(tasks)) {
@@ -99,9 +99,6 @@ function App() {
     cleaned = cleaned.replace(/^\s*\b([01]?\d|2[0-3])\b/g, "");
     return cleaned.trim();
   };
-
-  const [detectedTime, setDetectedTime] = useState(null);
-  const [pushStatus, setPushStatus] = useState('pending');
 
   const subscribeToPush = async () => {
     try {
