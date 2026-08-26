@@ -390,24 +390,40 @@ function App() {
     setMovingTaskId(null);
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     if (newTask.trim() === "") {
       setShowInput(false);
       setNewTask("");
       return;
     }
-    const newId = Date.now().toString();
+    const tempId = Date.now().toString();
     const timeToSet = parseTime(newTask);
     let cleanedText = stripTime(newTask);
     cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
-    const newTaskObj = { id: newId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
-      const updatedTasks = { ...tasks };
-      if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
-      updatedTasks["Backlog"].unshift(newTaskObj);
-      setTasks(updatedTasks);
+    const newTaskObj = { id: tempId, text: cleanedText, task: cleanedText, done: false, time: timeToSet, day: "Backlog" };
+    const updatedTasks = { ...tasks };
+    if (!updatedTasks["Backlog"]) updatedTasks["Backlog"] = [];
+    updatedTasks["Backlog"].unshift(newTaskObj);
+    setTasks(updatedTasks);
     setNewTask("");
     setShowInput(false);
-    apiAddTask(newTaskObj);
+    try {
+      const res = await apiAddTask(newTaskObj);
+      if (res?.task_id) {
+        // Sostituisce l'ID temporaneo con quello reale del server
+        setTasks(prev => {
+          const updated = { ...prev };
+          if (updated["Backlog"]) {
+            updated["Backlog"] = updated["Backlog"].map(t =>
+              t.id === tempId ? { ...t, id: String(res.task_id) } : t
+            );
+          }
+          return updated;
+        });
+      }
+    } catch (e) {
+      console.error("❌ addTask failed", e);
+    }
   };
 
   const handleAddTaskToDay = async (day) => {
@@ -418,8 +434,9 @@ function App() {
     const timeToSet = parseTime(inlineDayTask);
     let cleanedText = stripTime(inlineDayTask);
     cleanedText = cleanedText.charAt(0).toUpperCase() + cleanedText.slice(1);
+    const tempId = `task-${day.replace(/\//g, '-')}-${Date.now()}`;
     const newTaskObj = {
-      id: `task-${day.replace(/\//g, '-')}-${Date.now()}`,
+      id: tempId,
       text: cleanedText,
       done: false,
       time: timeToSet,
@@ -427,14 +444,27 @@ function App() {
     };
     const newTasks = { ...tasks };
     if (!newTasks[day]) newTasks[day] = [];
-    
-    // Inserisci sempre in cima
     newTasks[day].unshift(newTaskObj);
-    
     setTasks(newTasks);
     setAddingToDay(null);
     setInlineDayTask("");
-    await apiAddTask(newTaskObj);
+    try {
+      const res = await apiAddTask(newTaskObj);
+      if (res?.task_id) {
+        // Sostituisce l'ID temporaneo con quello reale del server
+        setTasks(prev => {
+          const updated = { ...prev };
+          if (updated[day]) {
+            updated[day] = updated[day].map(t =>
+              t.id === tempId ? { ...t, id: String(res.task_id) } : t
+            );
+          }
+          return updated;
+        });
+      }
+    } catch (e) {
+      console.error("❌ addTaskToDay failed", e);
+    }
   };
 
   const prevWeek = () => {
