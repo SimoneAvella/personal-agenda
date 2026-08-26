@@ -49,14 +49,6 @@ function App() {
   const [draggingEdge, setDraggingEdge] = useState(null);
   const [edgeTimer, setEdgeTimer] = useState(null);
 
-  // Sistema toast
-  const [toasts, setToasts] = useState([]);
-  const showToast = (message, type = 'error') => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
-  };
-  
   const EDGE_TIMEOUT = 1200;
   const EDGE_THRESHOLD = 80;
 
@@ -65,6 +57,14 @@ function App() {
   const [newTaskTime, setNewTaskTime] = useState("");
   const notifiedTasksRef = useRef(new Set());
   const wsConnectedRef = useRef(false); // Traccia se il WebSocket è connesso
+
+  // Sistema toast - dichiarato dopo tutti gli useState
+  const [toasts, setToasts] = useState([]);
+  const showToast = (message, type = 'error') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+  };
 
   // Task ordinati per giorno: prima quelli con orario (cronologici), poi gli altri
   const sortedTasks = useMemo(() => {
