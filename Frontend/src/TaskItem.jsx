@@ -2,6 +2,16 @@ import { useSortable } from "@dnd-kit/sortable";
 // adjustTranslate removed – not exported in current version
 import { CSS } from "@dnd-kit/utilities";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+
+const REMINDER_OPTIONS = [
+  { value: 0,   label: '🔔 Al momento esatto',  short: '🔔 0m' },
+  { value: 5,   label: '🔔 5 minuti prima',      short: '🔔 -5m' },
+  { value: 15,  label: '🔔 15 minuti prima',     short: '🔔 -15m' },
+  { value: 30,  label: '🔔 30 minuti prima',     short: '🔔 -30m' },
+  { value: 60,  label: '🔔 1 ora prima',         short: '🔔 -1h' },
+  { value: 120, label: '🔔 2 ore prima',         short: '🔔 -2h' },
+];
 
 export default function TaskItem({ task, toggleDone, editTaskText, updateTask }) {
   const { 
@@ -19,7 +29,12 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
   const displayText = task.text || task.task || "";
   const [editText, setEditText] = useState(displayText);
   const [editTime, setEditTime] = useState(task.time || "");
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
   const inputRef = useRef(null);
+  const isMobile = ('ontouchstart' in window) || window.innerWidth <= 768;
+
+  const currentOffset = task.reminder_offset !== undefined ? task.reminder_offset : 60;
+  const currentOption = REMINDER_OPTIONS.find(o => o.value === currentOffset) || REMINDER_OPTIONS[4];
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -55,14 +70,12 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
       setEditText(displayText);
     }
     if (timeChanged && updateTask) {
-      // Se l'utente ha svuotato l'orario, manda null; altrimenti il nuovo valore
       updateTask({ time: editTime.trim() || null });
     }
   };
 
   const wrapperRef = useRef(null);
 
-  // Chiudi l'editing se si clicca fuori dal task
   useEffect(() => {
     if (!isEditing) return;
     const handleClickOutside = (e) => {
@@ -77,6 +90,58 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [isEditing, editText, editTime]);
+
+  // Bottom sheet per mobile
+  const BottomSheet = () => createPortal(
+    <div className="reminder-sheet-overlay" onPointerDown={() => setShowBottomSheet(false)}>
+      <div className="reminder-sheet" onPointerDown={(e) => e.stopPropagation()}>
+        <div className="reminder-sheet-handle" />
+        <p className="reminder-sheet-title">Anticipo notifica</p>
+        {REMINDER_OPTIONS.map(o => (
+          <button
+            key={o.value}
+            className={`reminder-sheet-option ${o.value === currentOffset ? 'active' : ''}`}
+            onPointerDown={(e) => { e.stopPropagation(); updateTask && updateTask({ reminder_offset: o.value }); setShowBottomSheet(false); }}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>,
+    document.body
+  );
+
+  // Componente reminder: select su desktop, badge su mobile
+  const ReminderControl = ({ style: extraStyle }) => {
+    if (isMobile) {
+      return (
+        <>
+          <span
+            className="reminder-badge-mobile"
+            onPointerDown={(e) => { e.stopPropagation(); setShowBottomSheet(true); }}
+            style={extraStyle}
+          >
+            {currentOption.short}
+          </span>
+          {showBottomSheet && <BottomSheet />}
+        </>
+      );
+    }
+    return (
+      <select
+        className="reminder-select"
+        value={currentOffset}
+        onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
+        onPointerDown={(e) => e.stopPropagation()}
+        title="Cambia notifica"
+        style={extraStyle}
+      >
+        {REMINDER_OPTIONS.map(o => (
+          <option key={o.value} value={o.value}>{o.short}</option>
+        ))}
+      </select>
+    );
+  };
 
   return (
     <div 
@@ -143,41 +208,12 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
               onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
               style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", flexShrink: 1, minWidth: 0 }}
             />
-            {updateTask && (
-              <select
-                className="reminder-select"
-                value={task.reminder_offset !== undefined ? task.reminder_offset : 60}
-                onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
-                onPointerDown={(e) => e.stopPropagation()}
-                title="Cambia notifica"
-              >
-                <option value={0}>🔔 0m</option>
-                <option value={5}>🔔 -5m</option>
-                <option value={15}>🔔 -15m</option>
-                <option value={30}>🔔 -30m</option>
-                <option value={60}>🔔 -1h</option>
-                <option value={120}>🔔 -2h</option>
-              </select>
-            )}
+            {updateTask && <ReminderControl style={{ marginLeft: "10px" }} />}
           </div>
         ) : task.time ? (
           <div className="task-time-header">
             <span className="task-time-label">{task.time}</span>
-            <select 
-              className="reminder-select"
-              value={task.reminder_offset !== undefined ? task.reminder_offset : 60}
-              onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
-              onPointerDown={(e) => e.stopPropagation()}
-              title="Cambia notifica"
-              style={{ marginLeft: "10px" }}
-            >
-              <option value={0}>🔔 0m</option>
-              <option value={5}>🔔 -5m</option>
-              <option value={15}>🔔 -15m</option>
-              <option value={30}>🔔 -30m</option>
-              <option value={60}>🔔 -1h</option>
-              <option value={120}>🔔 -2h</option>
-            </select>
+            {updateTask && <ReminderControl style={{ marginLeft: "10px" }} />}
           </div>
         ) : null}
       </div>

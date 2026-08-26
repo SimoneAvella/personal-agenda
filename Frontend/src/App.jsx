@@ -739,9 +739,9 @@ function App() {
                             <h3 className={isToday ? "today-header" : ""}>{day}</h3>
                           </DroppableContainer>
                         )}
-                        {!isMobile && !isFirst && !isLast && (
+                        {(!isMobile && !isFirst && !isLast) || isMobile ? (
                           <h3 className={isToday ? "today-header" : ""}>{day}</h3>
-                        )}
+                        ) : null}
                         {!isMobile && isLast && (
                           <DroppableContainer id="next-week-btn" className="day-nav-btn" onClick={nextWeek} title="Settimana successiva">
                             <span>▶</span>

@@ -976,7 +976,7 @@
   padding-bottom: 2px;
 }
 
-/* ---- Reminder select ---- */
+/* ---- Reminder select (desktop) ---- */
 .reminder-select {
   appearance: none;
   -webkit-appearance: none;
@@ -999,24 +999,85 @@
   margin-left: 6px;
 }
 
-.task-time-label {
+/* ---- Reminder badge mobile ---- */
+.reminder-badge-mobile {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #475569;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 4px;
+  padding: 1px 5px;
+  cursor: pointer;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-shrink: 1;
-  min-width: 0;
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #ff4d4f;
+  flex-shrink: 0;
+  user-select: none;
 }
 
-@media (max-width: 768px) {
-  .reminder-select {
-    font-size: 8px;
-    max-width: 48px;
-    height: 15px;
-    line-height: 15px;
-  }
+/* ---- Bottom sheet reminder ---- */
+.reminder-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99999;
+  display: flex;
+  align-items: flex-end;
+}
+
+.reminder-sheet {
+  width: 100%;
+  background: white;
+  border-radius: 16px 16px 0 0;
+  padding: 12px 16px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.reminder-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+  margin: 0 auto 12px;
+}
+
+.reminder-sheet-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px;
+}
+
+.reminder-sheet-option {
+  width: 100%;
+  padding: 14px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.reminder-sheet-option:active {
+  background: #f1f5f9;
+}
+
+.reminder-sheet-option.active {
+  background: #eff6ff;
+  color: #3b82f6;
+  font-weight: 700;
 }
 .task-item:has(.task-time-header) {
   border-left: 4px solid #ff4d4f;
@@ -1778,6 +1839,18 @@
 .task-item input[type="checkbox"]:checked {
   border-color: white;
   background-color: white;
+}
+
+@media (max-width: 768px) {
+  .task-item input[type="checkbox"] {
+    width: 10px !important;
+    height: 10px !important;
+    min-width: 10px !important;
+    min-height: 10px !important;
+    margin-right: 4px !important;
+    align-self: center !important;
+    flex-shrink: 0 !important;
+  }
 }
 
 /* =========================
