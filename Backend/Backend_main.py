@@ -279,7 +279,7 @@ async def verify_mfa(data: dict):
 
     totp = pyotp.TOTP(MFA_SECRET)
     print(f"Verifica TOTP per il codice: {code}")
-    if not totp.verify(code):
+    if not totp.verify(code, valid_window=1):  # Accetta ±30 secondi di tolleranza
         raise HTTPException(status_code=401, detail="Codice MFA non valido")
 
     token = secrets.token_hex(32)
