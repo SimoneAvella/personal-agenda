@@ -96,7 +96,9 @@ else:
     engine = create_engine(
         DATABASE_URL,
         pool_pre_ping=True,
-        pool_recycle=1800,
+        pool_recycle=300,  # Ricicla connessioni dopo 5 minuti invece di 30
+        pool_size=3,  # Massimo 3 connessioni nel pool
+        max_overflow=2,  # Fino a 2 connessioni extra in caso di picco
         connect_args={"sslmode": "require"},
     )
 
@@ -173,7 +175,7 @@ def reminder_worker():
             db.close()
         except Exception as e:
             print(f"ERRORE REMINDER: {e}")
-        time.sleep(60)
+        time.sleep(1800)  # Controlla ogni 30 minuti invece di 60 secondi
 
 if DATABASE_URL and VAPID_PRIVATE_KEY:
     threading.Thread(target=reminder_worker, daemon=True).start()
