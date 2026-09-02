@@ -118,28 +118,47 @@ if DATABASE_URL and "postgresql" in DATABASE_URL:
 
 Base.metadata.create_all(bind=engine)
 
+import json
+import os
+
+CACHE_FILE = "reminders_cache.json"
+
+def sync_cache(db):
+    try:
+        tasks = db.query(TaskModel).filter(
+            TaskModel.time != None,
+            TaskModel.time != "",
+            TaskModel.done == False
+        ).all()
+        subs = db.query(SubscriptionModel).all()
+        
+        data = {
+            "tasks": [{"id": t.id, "day": t.day, "text": t.text, "time": t.time, "reminder_offset": t.reminder_offset} for t in tasks],
+            "subscriptions": [{"endpoint": s.endpoint, "info": s.subscription_info} for s in subs]
+        }
+        with open(CACHE_FILE, "w") as f:
+            json.dump(data, f)
+    except Exception as e:
+        print(f"Errore sync cache: {e}")
+
+try:
+    with engine.connect() as conn:
+        db = SessionLocal()
+        sync_cache(db)
+        db.close()
+except:
+    pass
+
+
+
 # --- PROMEMORIA IN BACKGROUND ---
 def reminder_worker():
-    if not DATABASE_URL:
-        return
-
-    # Engine creato UNA SOLA VOLTA fuori dal loop (evita il leak di connessioni)
-    engine_worker = create_engine(
-        DATABASE_URL,
-        pool_size=1,
-        max_overflow=0,
-        pool_pre_ping=True
-    )
-    SessionWorker = sessionmaker(bind=engine_worker)
-
     while True:
         try:
             now = datetime.now(ZoneInfo("Europe/Rome"))
 
-            # Salta il controllo di notte (00:00-06:59): nessun appuntamento notturno.
-            # Questo mantiene il consumo Neon sotto le 100h mensili del piano gratuito.
             if now.hour < 7:
-                time.sleep(3600)
+                time.sleep(60)
                 continue
 
             currentTime = now.strftime("%H:%M")
@@ -148,51 +167,43 @@ def reminder_worker():
             day_num = now.strftime("%d/%m")
             todayStr = f"{day_name} {day_num}"
 
-            db = SessionWorker()
-            try:
-                tasks = db.query(TaskModel).filter(
-                    TaskModel.day == todayStr,
-                    TaskModel.time != None,
-                    TaskModel.time != "",
-                    TaskModel.done == False
-                ).all()
+            if os.path.exists(CACHE_FILE) and VAPID_PRIVATE_KEY:
+                with open(CACHE_FILE, "r") as f:
+                    data = json.load(f)
+                
+                tasks = [t for t in data.get("tasks", []) if t.get("day") == todayStr]
+                subscriptions = data.get("subscriptions", [])
+                
+                for t in tasks:
+                    offset = t.get("reminder_offset") if t.get("reminder_offset") is not None else 60
+                    try:
+                        task_time_obj = datetime.strptime(t.get("time"), "%H:%M")
+                        task_dt = now.replace(hour=task_time_obj.hour, minute=task_time_obj.minute, second=0, microsecond=0)
+                        trigger_dt = task_dt - timedelta(minutes=offset)
+                        trigger_time_str = trigger_dt.strftime("%H:%M")
+                    except Exception:
+                        continue
 
-                if tasks and VAPID_PRIVATE_KEY:
-                    subscriptions = db.query(SubscriptionModel).all()
-                    for t in tasks:
-                        offset = t.reminder_offset if t.reminder_offset is not None else 60
-                        try:
-                            task_time_obj = datetime.strptime(t.time, "%H:%M")
-                            task_dt = now.replace(hour=task_time_obj.hour, minute=task_time_obj.minute, second=0, microsecond=0)
-                            trigger_dt = task_dt - timedelta(minutes=offset)
-                        except ValueError:
-                            continue
-
-                        # Invia la notifica se il trigger_time cade nell'ultima ora
-                        # (non confronto il minuto esatto per non perdere sveglie tra un check e l'altro)
-                        window_start = now - timedelta(hours=1)
-                        if window_start <= trigger_dt <= now:
-                            for sub in subscriptions:
-                                try:
-                                    webpush(
-                                        subscription_info=json.loads(sub.subscription_info),
-                                        data=json.dumps({
-                                            "title": f"Promemoria Task ({t.time})",
-                                            "body": t.text,
-                                            "url": "/"
-                                        }),
-                                        vapid_private_key=VAPID_PRIVATE_KEY,
-                                        vapid_claims=VAPID_CLAIMS
-                                    )
-                                except Exception:
-                                    pass
-            finally:
-                db.close()
+                    if trigger_time_str == currentTime:
+                        for sub in subscriptions:
+                            try:
+                                webpush(
+                                    subscription_info=json.loads(sub["info"]),
+                                    data=json.dumps({
+                                        "title": f"Promemoria Task ({t.get('time')})",
+                                        "body": t.get("text"),
+                                        "url": "/"
+                                    }),
+                                    vapid_private_key=VAPID_PRIVATE_KEY,
+                                    vapid_claims=VAPID_CLAIMS
+                                )
+                            except Exception:
+                                pass
 
         except Exception as e:
             print(f"ERRORE REMINDER: {e}")
 
-        time.sleep(3600)  # Controlla ogni 60 minuti
+        time.sleep(60)  # Controlla ogni 60 secondi, 0 impatto DB!
 
 if DATABASE_URL and VAPID_PRIVATE_KEY:
     threading.Thread(target=reminder_worker, daemon=True).start()
@@ -338,6 +349,7 @@ async def subscribe(data: dict, db: SessionLocal = Depends(get_db), auth: bool =
         sub.subscription_info = json.dumps(data)
     
     db.commit()
+    sync_cache(db)
     return {"status": "ok"}
 
 @app.get("/vapid-public-key")
@@ -379,6 +391,7 @@ def update_tasks(tasks_dict: dict = Body(...), db: SessionLocal = Depends(get_db
                 )
                 db.add(new_task)
     db.commit()
+    sync_cache(db)
     return {"status": "ok"}
 
 # --- ATOMIC ENDPOINTS ---
@@ -398,7 +411,7 @@ async def add_task_atomic(task: dict = Body(...), db: SessionLocal = Depends(get
     )
     db.add(new_task)
     db.commit()
-    
+    sync_cache(db)
     await broadcast_task_change("task_created", {
         "id": new_task.id,
         "day": new_task.day,
