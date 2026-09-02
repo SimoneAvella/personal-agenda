@@ -152,6 +152,8 @@ except:
 
 
 # --- PROMEMORIA IN BACKGROUND ---
+notified_tasks = set()
+
 def reminder_worker():
     while True:
         try:
@@ -161,11 +163,8 @@ def reminder_worker():
                 time.sleep(60)
                 continue
 
-            currentTime = now.strftime("%H:%M")
             weekdays_it = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"]
             day_name = weekdays_it[now.weekday()]
-            # FIX: now.day rimuove lo zero iniziale (es. "2/09" invece di "02/09"), 
-            # allineandosi al JS del frontend (getDate())
             day_num = f"{now.day}/{now.strftime('%m')}"
             todayStr = f"{day_name} {day_num}"
 
@@ -176,36 +175,48 @@ def reminder_worker():
                 tasks = [t for t in data.get("tasks", []) if t.get("day") == todayStr]
                 subscriptions = data.get("subscriptions", [])
                 
+                # Finestra di 60 minuti
+                window_start = now - timedelta(hours=1)
+                
                 for t in tasks:
                     offset = t.get("reminder_offset") if t.get("reminder_offset") is not None else 60
                     try:
                         task_time_obj = datetime.strptime(t.get("time"), "%H:%M")
                         task_dt = now.replace(hour=task_time_obj.hour, minute=task_time_obj.minute, second=0, microsecond=0)
                         trigger_dt = task_dt - timedelta(minutes=offset)
-                        trigger_time_str = trigger_dt.strftime("%H:%M")
                     except Exception:
                         continue
 
-                    if trigger_time_str == currentTime:
-                        for sub in subscriptions:
-                            try:
-                                webpush(
-                                    subscription_info=json.loads(sub["info"]),
-                                    data=json.dumps({
-                                        "title": f"Promemoria Task ({t.get('time')})",
-                                        "body": t.get("text"),
-                                        "url": "/"
-                                    }),
-                                    vapid_private_key=VAPID_PRIVATE_KEY,
-                                    vapid_claims=VAPID_CLAIMS
-                                )
-                            except Exception:
-                                pass
+                    # Se la notifica cade nell'ultima ora
+                    if window_start <= trigger_dt <= now:
+                        # Crea una chiave univoca per non notificare due volte lo stesso task
+                        notif_key = f"{t.get('id')}_{trigger_dt.strftime('%H:%M')}"
+                        if notif_key not in notified_tasks:
+                            for sub in subscriptions:
+                                try:
+                                    webpush(
+                                        subscription_info=json.loads(sub["info"]),
+                                        data=json.dumps({
+                                            "title": f"Promemoria Task ({t.get('time')})",
+                                            "body": t.get("text"),
+                                            "url": "/"
+                                        }),
+                                        vapid_private_key=VAPID_PRIVATE_KEY,
+                                        vapid_claims=VAPID_CLAIMS
+                                    )
+                                except Exception:
+                                    pass
+                            notified_tasks.add(notif_key)
+                
+                # Pulizia set a mezzanotte
+                if now.hour == 0 and now.minute < 5:
+                    notified_tasks.clear()
 
         except Exception as e:
             print(f"ERRORE REMINDER: {e}")
 
-        time.sleep(60)  # Controlla ogni 60 secondi, 0 impatto DB!
+        # Controllo ogni 30 secondi (aumenta reattività ed evita skip)
+        time.sleep(30)
 
 if DATABASE_URL and VAPID_PRIVATE_KEY:
     threading.Thread(target=reminder_worker, daemon=True).start()
