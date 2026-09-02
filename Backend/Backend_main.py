@@ -120,65 +120,81 @@ Base.metadata.create_all(bind=engine)
 
 # --- PROMEMORIA IN BACKGROUND ---
 def reminder_worker():
+    if not DATABASE_URL:
+        return
+
+    # Engine creato UNA SOLA VOLTA fuori dal loop (evita il leak di connessioni)
+    engine_worker = create_engine(
+        DATABASE_URL,
+        pool_size=1,
+        max_overflow=0,
+        pool_pre_ping=True
+    )
+    SessionWorker = sessionmaker(bind=engine_worker)
+
     while True:
         try:
-            if not DATABASE_URL:
-                time.sleep(60)
-                continue
-                
-            engine_worker = create_engine(DATABASE_URL)
-            SessionWorker = sessionmaker(bind=engine_worker)
-            db = SessionWorker()
-            
             now = datetime.now(ZoneInfo("Europe/Rome"))
+
+            # Salta il controllo di notte (00:00-06:59): nessun appuntamento notturno.
+            # Questo mantiene il consumo Neon sotto le 100h mensili del piano gratuito.
+            if now.hour < 7:
+                time.sleep(3600)
+                continue
+
             currentTime = now.strftime("%H:%M")
-            
             weekdays_it = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"]
             day_name = weekdays_it[now.weekday()]
             day_num = now.strftime("%d/%m")
             todayStr = f"{day_name} {day_num}"
-            
-            tasks = db.query(TaskModel).filter(
-                TaskModel.day == todayStr,
-                TaskModel.time != None,
-                TaskModel.time != "",
-                TaskModel.done == False
-            ).all()
-            
-            if tasks and VAPID_PRIVATE_KEY:
-                subscriptions = db.query(SubscriptionModel).all()
-                for t in tasks:
-                    offset = t.reminder_offset if t.reminder_offset is not None else 60
-                    try:
-                        task_time_obj = datetime.strptime(t.time, "%H:%M")
-                        task_dt = now.replace(hour=task_time_obj.hour, minute=task_time_obj.minute, second=0, microsecond=0)
-                        trigger_time = task_dt - timedelta(minutes=offset)
-                        trigger_time_str = trigger_time.strftime("%H:%M")
-                    except ValueError:
-                        continue # Skip se formato errato
-                    
-                    if trigger_time_str == currentTime:
-                        for sub in subscriptions:
-                            try:
-                                webpush(
-                                    subscription_info=json.loads(sub.subscription_info),
-                                    data=json.dumps({
-                                        "title": f"Promemoria Task ({t.time})",
-                                        "body": t.text,
-                                        "url": "/"
-                                    }),
-                                    vapid_private_key=VAPID_PRIVATE_KEY,
-                                    vapid_claims=VAPID_CLAIMS
-                                )
-                            except Exception:
-                                pass
-            db.close()
+
+            db = SessionWorker()
+            try:
+                tasks = db.query(TaskModel).filter(
+                    TaskModel.day == todayStr,
+                    TaskModel.time != None,
+                    TaskModel.time != "",
+                    TaskModel.done == False
+                ).all()
+
+                if tasks and VAPID_PRIVATE_KEY:
+                    subscriptions = db.query(SubscriptionModel).all()
+                    for t in tasks:
+                        offset = t.reminder_offset if t.reminder_offset is not None else 60
+                        try:
+                            task_time_obj = datetime.strptime(t.time, "%H:%M")
+                            task_dt = now.replace(hour=task_time_obj.hour, minute=task_time_obj.minute, second=0, microsecond=0)
+                            trigger_time = task_dt - timedelta(minutes=offset)
+                            trigger_time_str = trigger_time.strftime("%H:%M")
+                        except ValueError:
+                            continue
+
+                        if trigger_time_str == currentTime:
+                            for sub in subscriptions:
+                                try:
+                                    webpush(
+                                        subscription_info=json.loads(sub.subscription_info),
+                                        data=json.dumps({
+                                            "title": f"Promemoria Task ({t.time})",
+                                            "body": t.text,
+                                            "url": "/"
+                                        }),
+                                        vapid_private_key=VAPID_PRIVATE_KEY,
+                                        vapid_claims=VAPID_CLAIMS
+                                    )
+                                except Exception:
+                                    pass
+            finally:
+                db.close()
+
         except Exception as e:
             print(f"ERRORE REMINDER: {e}")
-        time.sleep(1800)  # Controlla ogni 30 minuti invece di 60 secondi
+
+        time.sleep(3600)  # Controlla ogni 60 minuti
 
 if DATABASE_URL and VAPID_PRIVATE_KEY:
     threading.Thread(target=reminder_worker, daemon=True).start()
+
 
 def get_db():
     db = SessionLocal()
