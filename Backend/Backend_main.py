@@ -164,12 +164,14 @@ def reminder_worker():
                         try:
                             task_time_obj = datetime.strptime(t.time, "%H:%M")
                             task_dt = now.replace(hour=task_time_obj.hour, minute=task_time_obj.minute, second=0, microsecond=0)
-                            trigger_time = task_dt - timedelta(minutes=offset)
-                            trigger_time_str = trigger_time.strftime("%H:%M")
+                            trigger_dt = task_dt - timedelta(minutes=offset)
                         except ValueError:
                             continue
 
-                        if trigger_time_str == currentTime:
+                        # Invia la notifica se il trigger_time cade nell'ultima ora
+                        # (non confronto il minuto esatto per non perdere sveglie tra un check e l'altro)
+                        window_start = now - timedelta(hours=1)
+                        if window_start <= trigger_dt <= now:
                             for sub in subscriptions:
                                 try:
                                     webpush(
