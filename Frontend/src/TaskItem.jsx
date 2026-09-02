@@ -93,11 +93,6 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
   useEffect(() => {
     if (!isEditing) return;
     const handleClickOutside = (e) => {
-      // Ignora i click/touch sul bottom sheet del promemoria in modo ultra-sicuro
-      const targetEl = e.target.nodeType === 3 ? e.target.parentNode : e.target;
-      if (targetEl && typeof targetEl.closest === 'function' && targetEl.closest('.reminder-sheet-overlay')) {
-        return;
-      }
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         handleSave();
       }
@@ -160,8 +155,14 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
               e.stopPropagation(); 
               setShowBottomSheet(true); 
             }}
-            onPointerDown={(e) => e.stopPropagation()}
-            onPointerUp={(e) => e.stopPropagation()}
+            onPointerDown={(e) => { 
+              e.preventDefault();
+              e.stopPropagation(); 
+            }}
+            onPointerUp={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
             style={extraStyle}
           >
             {currentOption.short}
