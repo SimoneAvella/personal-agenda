@@ -502,3 +502,16 @@ else:
     @app.get("/")
     def fallback():
         return {"error": f"Frontend non trovato in {DIST_DIR}."}
+@app.get("/debug-cache")
+def get_debug_cache():
+    import os, json
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    now = datetime.now(ZoneInfo("Europe/Rome"))
+    cache_path = CACHE_FILE
+    if os.path.exists(cache_path):
+        with open(cache_path, "r") as f:
+            data = json.load(f)
+    else:
+        data = "Cache file not found"
+    return {"server_time": now.strftime("%Y-%m-%d %H:%M:%S"), "server_day_num": f"{now.day}/{now.strftime('%m')}", "cache": data, "pwd": os.getcwd()}
