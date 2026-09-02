@@ -93,8 +93,9 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
   useEffect(() => {
     if (!isEditing) return;
     const handleClickOutside = (e) => {
-      // Ignora i click/touch sul bottom sheet del promemoria
-      if (e.target && e.target.closest && e.target.closest('.reminder-sheet-overlay')) {
+      // Ignora i click/touch sul bottom sheet del promemoria in modo ultra-sicuro
+      const targetEl = e.target.nodeType === 3 ? e.target.parentNode : e.target;
+      if (targetEl && typeof targetEl.closest === 'function' && targetEl.closest('.reminder-sheet-overlay')) {
         return;
       }
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
