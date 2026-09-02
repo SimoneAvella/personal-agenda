@@ -164,7 +164,9 @@ def reminder_worker():
             currentTime = now.strftime("%H:%M")
             weekdays_it = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"]
             day_name = weekdays_it[now.weekday()]
-            day_num = now.strftime("%d/%m")
+            # FIX: now.day rimuove lo zero iniziale (es. "2/09" invece di "02/09"), 
+            # allineandosi al JS del frontend (getDate())
+            day_num = f"{now.day}/{now.strftime('%m')}"
             todayStr = f"{day_name} {day_num}"
 
             if os.path.exists(CACHE_FILE) and VAPID_PRIVATE_KEY:
