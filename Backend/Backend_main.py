@@ -449,6 +449,7 @@ async def update_task_atomic(task_id: str, changes: dict = Body(...), db: Sessio
             setattr(task, key, value)
             
     db.commit()
+    sync_cache(db)
     
     await broadcast_task_change("task_updated", {
         "id": task.id,
