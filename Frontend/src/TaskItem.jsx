@@ -159,14 +159,8 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
               e.stopPropagation(); 
               setShowBottomSheet(true); 
             }}
-            onPointerDown={(e) => { 
-              e.preventDefault();
-              e.stopPropagation(); 
-            }}
-            onPointerUp={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
             style={extraStyle}
           >
             {currentOption.short}
