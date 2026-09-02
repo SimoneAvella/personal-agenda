@@ -93,6 +93,10 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
   useEffect(() => {
     if (!isEditing) return;
     const handleClickOutside = (e) => {
+      // Ignora i click/touch sul bottom sheet del promemoria
+      if (e.target && e.target.closest && e.target.closest('.reminder-sheet-overlay')) {
+        return;
+      }
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         handleSave();
       }
