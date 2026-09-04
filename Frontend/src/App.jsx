@@ -664,9 +664,15 @@ function App() {
     }
     setTasks(updatedTasks);
     
-    // Update position/column in DB if needed (here we just update day if changed, and order manually)
-    // The previous implementation used updateTasks(updatedTasks) to save order. 
-    // For now, if the activeContainer != overContainer, we must update the day in DB
+    // Salva l'ordine aggiornato nel DB
+    const tasksToUpdate = updatedTasks[overContainer] || [];
+    
+    // Aggiorna l'ordine per tutti i task nella colonna di destinazione
+    tasksToUpdate.forEach((task, index) => {
+      apiPatchTask(task.id, { order: index });
+    });
+    
+    // Se ha cambiato colonna/giorno, aggiorna anche quello
     if (activeContainer !== overContainer) {
       apiPatchTask(foundTaskObj.id, { day: overContainer });
     }

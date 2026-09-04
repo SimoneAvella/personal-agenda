@@ -64,6 +64,7 @@ class TaskModel(Base):
     col = Column(String)
     time = Column(String, nullable=True) # Orario promemoria
     reminder_offset = Column(Integer, default=60, nullable=True) # Minuti di anticipo
+    order = Column(Integer, default=0, nullable=True) # Posizione nell'ordine
 
 class SubscriptionModel(Base):
     __tablename__ = "subscriptions"
@@ -111,6 +112,7 @@ if DATABASE_URL and "postgresql" in DATABASE_URL:
         try:
             conn.execute(text("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS time VARCHAR;"))
             conn.execute(text("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS reminder_offset INTEGER DEFAULT 60;"))
+            conn.execute(text("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS \"order\" INTEGER DEFAULT 0;"))
             conn.commit()
             print("Database Online Riparato!")
         except Exception as e:
@@ -382,9 +384,15 @@ def get_tasks(db: SessionLocal = Depends(get_db), auth: bool = Depends(check_aut
             "text": t.text,
             "done": t.done,
             "col": t.col,
-            "time": t.time, # Aggiunto orario
-            "reminder_offset": t.reminder_offset
+            "time": t.time,
+            "reminder_offset": t.reminder_offset,
+            "order": t.order if t.order is not None else 999
         })
+    
+    # Ordina ogni giorno per order, poi per time (task con orario prima)
+    for day in result:
+        result[day].sort(key=lambda t: (t.get("order", 999), "" if t.get("time") else "z"))
+    
     return result
 
 @app.post("/tasks")
