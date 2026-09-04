@@ -430,6 +430,11 @@ async def add_task_atomic(task: dict = Body(...), db: SessionLocal = Depends(get
         time=task.get("time"),
         reminder_offset=task.get("reminder_offset", 60)
     )
+    
+    # Calcola il massimo order attuale per il giorno e aggiungi 1
+    max_order_task = db.query(TaskModel).filter(TaskModel.day == new_task.day).order_by(TaskModel.order.desc()).first()
+    new_task.order = (max_order_task.order + 1) if max_order_task and max_order_task.order is not None else 0
+
     db.add(new_task)
     db.commit()
     sync_cache(db)
@@ -535,3 +540,16 @@ def get_debug_cache():
     else:
         data = "Cache file not found"
     return {"server_time": now.strftime("%Y-%m-%d %H:%M:%S"), "server_day_num": f"{now.day}/{now.strftime('%m')}", "cache": data, "pwd": os.getcwd()}
+@app.post("/update-order")
+async def update_order(data: dict = Body(...), db: SessionLocal = Depends(get_db), auth: bool = Depends(check_auth)):
+    # data is like {"day1": ["id1", "id2"], "day2": ["id3", "id4"]}
+    print(f"POST /update-order: {data}")
+    for day, task_ids in data.items():
+        for i, task_id in enumerate(task_ids):
+            task = db.query(TaskModel).filter(TaskModel.id == task_id).first()
+            if task:
+                task.order = i
+    db.commit()
+    sync_cache(db)
+    return {"status": "ok"}
+
