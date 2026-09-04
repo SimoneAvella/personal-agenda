@@ -998,7 +998,7 @@
     border-bottom: none !important;
     border-left: none !important;
     overflow: hidden;
-.is-today {
+  .is-today {
   border-top: 4px solid #007bff !important;
   background: #f8fbff;
 }
@@ -1021,26 +1021,17 @@
 
 /* ---- Reminder select (desktop) ---- */
 .reminder-select {
-  appearance: none;
-  -webkit-appearance: none;
-  background: rgba(0,0,0,0.04);
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 4px;
-  color: #475569;
-  cursor: pointer;
-  outline: none;
-  font-weight: 700;
-  text-align: center;
-  white-space: nowrap;
-  font-size: 7px;
-  padding: 0 5px;
-  height: 16px;
-  line-height: 16px;
-  max-width: 56px;
-  flex-shrink: 0;
-  box-sizing: border-box;
-  margin-left: auto; /* Spinge la select a destra */
-}
+    font-size: 9px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+    padding: 0 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
 
 /* ---- Reminder dropdown (desktop) ---- */
 .reminder-dropdown {
@@ -1067,20 +1058,11 @@
 
 /* ---- Reminder badge mobile ---- */
 .reminder-badge-mobile {
-  font-size: 0.52rem; /* Ridotto per guadagnare spazio */
-  font-weight: 700;
-  color: #475569;
-  background: rgba(0,0,0,0.04);
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 3px;
-  padding: 1px 3px; /* Padding ridotto */
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  user-select: none;
-  display: inline-block;
-  min-width: fit-content;
-}
+    font-size: 7px !important;
+    padding: 1px 2px !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
 
 /* ---- Bottom sheet reminder ---- */
 .reminder-sheet-overlay {
@@ -1260,14 +1242,16 @@
 
   .task-alarm-icon {
     display: inline-block !important;
-    transform: scale(0.65) !important; /* Ancora più piccola su mobile */
+    transform: scale(0.85) !important; /* Ancora più piccola su mobile */
     transform-origin: left center !important;
     margin-right: -3px !important;
   }
 
   .task-time-label {
-    font-size: 10.5px !important;
+    font-size: 8px !important;
     font-weight: 700;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
   }
 
   .inline-day-textarea,
@@ -1280,8 +1264,10 @@
   }
 
   .reminder-badge-mobile {
-    font-size: 0.52rem !important;
-    padding: 1px 3px !important;
+    font-size: 7px !important;
+    padding: 1px 2px !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
   }
 
   /* Base area styling */
@@ -1949,7 +1935,7 @@
     height: 10px !important;
     min-width: 10px !important;
     min-height: 10px !important;
-    margin-right: 4px !important;
+    margin-right: 2px !important;
     align-self: center !important;
     flex-shrink: 0 !important;
   }
@@ -2018,3 +2004,11 @@
     padding-top: 16px !important;
   }
 }
+
+
+
+
+
+
+
+

@@ -154,15 +154,28 @@ function App() {
     if (isAuthenticated) setDays(getWeekDates(weekStart));
   }, [weekStart, isAuthenticated]);
 
+  const sortTasksList = (list) => {
+    if (!list) return [];
+    const timed = list.filter(t => t.time);
+    const untimed = list.filter(t => !t.time);
+    timed.sort((a, b) => {
+      const [hA, mA] = a.time.split(':').map(Number);
+      const [hB, mB] = b.time.split(':').map(Number);
+      return (hA * 60 + mA) - (hB * 60 + mB);
+    });
+    return [...timed, ...untimed];
+  };
+
   const fetchTasks = async () => {
     if (!isAuthenticated) return;
     const data = await getTasks();
     const normalized = {};
     Object.keys(data).forEach(day => {
-      normalized[day] = data[day].map((t, i) => ({
+      const dayTasks = data[day].map((t, i) => ({
         ...t,
         id: String(t.id || `task-${day}-${i}-${Date.now()}`)
       }));
+      normalized[day] = sortTasksList(dayTasks);
     });
     setTasks(normalized);
   };
@@ -196,6 +209,7 @@ function App() {
           if (!newTasks[payload.day]) newTasks[payload.day] = [];
           if (!newTasks[payload.day].find(t => String(t.id) === String(payload.id))) {
             newTasks[payload.day].push(payload);
+            newTasks[payload.day] = sortTasksList(newTasks[payload.day]);
           }
           return newTasks;
         });
@@ -218,12 +232,14 @@ function App() {
             newTasks[payload.day] = [...newTasks[payload.day]];
             // Merge instead of replace to preserve local fields the server may not echo back
             newTasks[payload.day][oldIdx] = { ...newTasks[payload.day][oldIdx], ...payload };
+            newTasks[payload.day] = sortTasksList(newTasks[payload.day]);
           } else {
             if (oldDay) {
               newTasks[oldDay] = newTasks[oldDay].filter(t => String(t.id) !== String(payload.id));
             }
             if (!newTasks[payload.day]) newTasks[payload.day] = [];
             newTasks[payload.day].push(payload);
+            newTasks[payload.day] = sortTasksList(newTasks[payload.day]);
           }
           return newTasks;
         });
@@ -317,9 +333,11 @@ function App() {
     const idx = newTasks[day].findIndex(t => (t.id ? t.id === taskId : (t.text === oldText || t.task === oldText)));
     if (idx === -1) return;
     newTasks[day] = [...newTasks[day]];
-    newTasks[day][idx] = { ...newTasks[day][idx], text: newText, task: newText };
+    const updatedTask = { ...newTasks[day][idx], text: newText, task: newText };
+    newTasks[day][idx] = updatedTask;
+    newTasks[day] = sortTasksList(newTasks[day]);
     setTasks(newTasks);
-    apiPatchTask(newTasks[day][idx].id, { text: newText });
+    apiPatchTask(updatedTask.id, { text: newText });
   };
 
   const updateTaskPartial = (day, taskKey, changes) => {
@@ -329,8 +347,14 @@ function App() {
     if (idx === -1) return;
     newTasks[day] = [...newTasks[day]];
     newTasks[day][idx] = { ...newTasks[day][idx], ...changes };
+    
+    // Sort only if time was potentially added/changed
+    newTasks[day] = sortTasksList(newTasks[day]);
+    
     setTasks(newTasks);
-    apiPatchTask(newTasks[day][idx].id || taskKey, changes);
+    // Note: since we sorted, we need to find the task by id again if we want to use the patched object,
+    // but we can just use the taskKey since we have it.
+    apiPatchTask(taskKey, changes);
   };
 
   const restoreTask = (taskId) => {
@@ -882,3 +906,7 @@ function App() {
 }
 
 export default App;
+
+
+
+

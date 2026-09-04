@@ -30,9 +30,18 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
   const displayText = task.text || task.task || "";
   const [editText, setEditText] = useState(displayText);
   const [editTime, setEditTime] = useState(task.time || "");
-  const [showBottomSheet, setShowBottomSheet] = useState(false);
   const inputRef = useRef(null);
   const isMobile = ('ontouchstart' in window) || window.innerWidth <= 768;
+  const lastTapRef = useRef(0);
+
+  const handleTouchEnd = () => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      if (!task.done) setIsEditing(true);
+    }
+    lastTapRef.current = now;
+  };
 
   const currentOffset = task.reminder_offset !== undefined ? task.reminder_offset : 60;
   const currentOption = REMINDER_OPTIONS.find(o => o.value === currentOffset) || REMINDER_OPTIONS[4];
@@ -105,78 +114,17 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
     };
   }, [isEditing, editText, editTime]);
 
-  // Bottom sheet per mobile
-  const BottomSheet = () => createPortal(
-    <div 
-      className="reminder-sheet-overlay" 
-      onClick={(e) => { 
-        e.preventDefault(); 
-        e.stopPropagation(); 
-        setShowBottomSheet(false); 
-      }}
-    >
-      <div 
-        className="reminder-sheet" 
-        onClick={(e) => { 
-          e.preventDefault(); 
-          e.stopPropagation(); 
-        }}
-      >
-        <div className="reminder-sheet-handle" />
-        <p className="reminder-sheet-title">Anticipo notifica</p>
-        {REMINDER_OPTIONS.map(o => (
-          <button
-            key={o.value}
-            className={`reminder-sheet-option ${o.value === currentOffset ? 'active' : ''}`}
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
-              updateTask && updateTask({ reminder_offset: o.value }); 
-              setShowBottomSheet(false); 
-            }}
-          >
-            {o.label}
-          </button>
-        ))}
-      </div>
-    </div>,
-    document.body
-  );
-
   // Funzione per il rendering del reminder
+  // Usiamo la select nativa su TUTTI i dispositivi: su mobile il sistema apre il picker nativo
+  // che è touch-friendly e non interferisce con dnd-kit o gli eventi React.
   const renderReminderControl = (extraStyle = {}) => {
-    if (isMobile) {
-      return (
-        <>
-          <span
-            className="reminder-badge-mobile"
-            onClick={(e) => { 
-              e.preventDefault();
-              e.stopPropagation(); 
-              setShowBottomSheet(true); 
-            }}
-            onPointerDown={(e) => { 
-              e.preventDefault();
-              e.stopPropagation(); 
-            }}
-            onPointerUp={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            style={extraStyle}
-          >
-            {currentOption.short}
-          </span>
-          {showBottomSheet && <BottomSheet />}
-        </>
-      );
-    }
     return (
       <select
         className="reminder-select"
         value={currentOffset}
         onChange={(e) => updateTask && updateTask({ reminder_offset: parseInt(e.target.value, 10) })}
         onPointerDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
         title="Cambia notifica"
         style={extraStyle}
       >
@@ -195,16 +143,20 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
       {...(isEditing ? {} : listeners)}
       className={`task-item ${task.done ? "task-done" : ""}`}
       onDoubleClick={() => { if (!task.done) setIsEditing(true); }}
+      onTouchEnd={handleTouchEnd}
     >
-      <input 
-        type="checkbox" 
-        checked={task.done} 
-        onChange={toggleDone}
-        onPointerDown={(e) => e.stopPropagation()} 
-        style={{ flexShrink: 0, cursor: "pointer", alignSelf: "center" }} 
-      />
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "3px", flexShrink: 0, minWidth: "12px", alignSelf: "center" }}>
+        {task.time && <span style={{ fontSize: "9px", lineHeight: "1", textAlign: "center", display: "block", transform: "translateX(-1.5px)" }}>⏰</span>}
+        <input 
+          type="checkbox" 
+          checked={task.done} 
+          onChange={toggleDone}
+          onPointerDown={(e) => e.stopPropagation()} 
+          style={{ margin: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} 
+        />
+      </div>
       
-      <div ref={wrapperRef} style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: "2px" }}>
+      <div ref={wrapperRef} style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, boxSizing: "border-box", gap: "2px" }}>
         {isEditing ? (
           <textarea
             ref={inputRef}
@@ -238,28 +190,33 @@ export default function TaskItem({ task, toggleDone, editTaskText, updateTask })
           />
         ) : (
           <span className="task-text-content">
-            {task.time && <span className="task-alarm-icon">⏰ </span>}{displayText}
+            {displayText}
           </span>
         )}
 
         {isEditing ? (
-          task.time ? (
-            <div className="task-time-header">
-              <input
-                type="time"
-                value={editTime}
-                onChange={(e) => setEditTime(e.target.value)}
-                onPointerDown={(e) => e.stopPropagation()}
-                onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
-                style={{ fontSize: "0.75rem", padding: "1px 4px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", flexShrink: 1, minWidth: 0 }}
-              />
-              {updateTask && renderReminderControl()}
-            </div>
-          ) : null
-        ) : task.time ? (
-          <div className="task-time-header">
-            <span className="task-time-label">{task.time}</span>
+          <div className="task-time-header" style={{ display: 'flex', flexDirection: 'column', gap: '2px', width: '138%', borderTop: '1px solid #eee', paddingTop: '2px', marginTop: '1px', marginBottom: '-10px', transform: 'scale(0.72)', transformOrigin: 'top left' }}>
+            <input
+              type="time"
+              value={editTime}
+              onChange={(e) => setEditTime(e.target.value)}
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onKeyDown={(e) => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); handleSave(); } if (e.key === "Escape") { setEditTime(task.time || ""); setIsEditing(false); } }}
+              style={{ fontSize: "12px", padding: "1px 2px", borderRadius: "4px", border: "1px solid #aaa", background: "transparent", color: "inherit", cursor: "text", width: "100%", boxSizing: "border-box", minHeight: "18px", lineHeight: "1", textAlign: "center" }}
+            />
             {updateTask && renderReminderControl()}
+          </div>
+        ) : task.time ? (
+          <div className="task-time-header" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'flex-start', gap: '1px', width: '100%', overflow: 'hidden' }}>
+            <span className="task-time-label" style={{ flexShrink: 1, whiteSpace: 'nowrap', minWidth: 0, textOverflow: 'ellipsis', overflow: 'hidden' }}>{task.time}</span>
+            {isMobile ? (
+              <span className="reminder-badge-mobile" style={{ cursor: "default", flexShrink: 1, whiteSpace: 'nowrap', minWidth: 0, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {currentOption.short}
+              </span>
+            ) : (
+              updateTask && renderReminderControl()
+            )}
           </div>
         ) : null}
       </div>
