@@ -4,6 +4,7 @@ gunicorn
 pyotp
 sqlalchemy
 psycopg2-binary
+psycopg[binary]
 python-multipart
 python-jose[cryptography]
 python-dotenv
