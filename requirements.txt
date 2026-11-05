@@ -10,6 +10,6 @@ python-dotenv
 passlib[bcrypt]
 bcrypt
 pywebpush
-pywebpush
 cryptography
 python-socketio
+certifi>=2024.12.14
