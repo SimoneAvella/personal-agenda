@@ -129,3 +129,18 @@ export function initSocket(onTaskCreated, onTaskUpdated, onTaskDeleted) {
 
   return socket;
 }
+export const updateOrder = async (payload) => {
+  const token = localStorage.getItem('token');
+  try {
+    await fetch(${API_BASE_URL}/update-order, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': Bearer 
+      },
+      body: JSON.stringify(payload)
+    });
+  } catch (error) {
+    console.error('API Error in updateOrder:', error);
+  }
+};

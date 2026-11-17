@@ -7,7 +7,7 @@ const ENABLE_WEEK_EDGE_DRAG = true; // set to false to disable
 import { createPortal } from "react-dom";
 import { getWeekDates, getTodayString } from "./utils/dates";
 import TaskItem from "./TaskItem";
-import { getTasks, moveTaskAPI, checkAuth, logout, API_BASE_URL, initSocket, addTask as apiAddTask, patchTask as apiPatchTask, deleteTask as apiDeleteTask } from "./api";
+import { getTasks, moveTaskAPI, checkAuth, logout, API_BASE_URL, initSocket, addTask as apiAddTask, patchTask as apiPatchTask, deleteTask as apiDeleteTask, updateOrder as apiUpdateOrder } from "./api";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import {
   DndContext,
@@ -680,6 +680,34 @@ function App() {
     finishDrag(overContainer !== "Backlog");
   };
 
+  // Calcola task arretrati da settimane precedenti
+  const overdueCount = (() => {
+    const currentYear = new Date().getFullYear();
+    const today = new Date();
+    const realMonday = new Date(today);
+    realMonday.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
+    realMonday.setHours(0, 0, 0, 0);
+
+    const skipDays = new Set(["Backlog", "Trash"]);
+    let count = 0;
+
+    for (const [dayKey, taskList] of Object.entries(tasks)) {
+      if (skipDays.has(dayKey)) continue;
+      const match = dayKey.match(/(\d{1,2})\/(\d{2})/);
+      if (!match) continue;
+      const day = parseInt(match[1]);
+      const month = parseInt(match[2]) - 1;
+      const year = month > today.getMonth() ? currentYear - 1 : currentYear;
+      const taskDate = new Date(year, month, day);
+      taskDate.setHours(0, 0, 0, 0);
+
+      if (taskDate < realMonday) {
+        count += (taskList || []).filter(t => !t.done).length;
+      }
+    }
+    return count;
+  })();
+
   const columns = [[], [], []];
   tasks["Backlog"]?.forEach((task, index) => {
     const colIdx = index % 3;
@@ -725,6 +753,9 @@ function App() {
     <div className={`app-container ${draggingEdge ? `edge-active-${draggingEdge}` : ""}`} >
       {isMobile && (
         <div className="mobile-top-nav">
+          {overdueCount > 0 && (
+            <span className="overdue-banner">⚠️ {overdueCount} arretrat{overdueCount === 1 ? 'o' : 'i'}</span>
+          )}
           <span className="mobile-title">Calendario 🗓️</span>
         </div>
       )}
@@ -749,6 +780,9 @@ function App() {
                     <span>▶</span>
                   </DroppableContainer>
                 </>
+              )}
+              {!isMobile && overdueCount > 0 && (
+                <div className="overdue-banner-desktop">⚠️ {overdueCount} task arretrat{overdueCount === 1 ? 'o' : 'i'} da settimane precedenti</div>
               )}
               {days.map((day, i) => {
                 const isToday = day === getTodayString();
@@ -912,6 +946,7 @@ function App() {
 }
 
 export default App;
+
 
 
 

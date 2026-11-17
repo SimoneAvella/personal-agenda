@@ -42,7 +42,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+    "https://mia-agenda.onrender.com",  # frontend in produzione
+    "http://localhost:5173",             # sviluppo locale
+    "http://127.0.0.1:5173",            # sviluppo locale alternativo
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
